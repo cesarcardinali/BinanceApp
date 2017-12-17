@@ -6,11 +6,11 @@ public class Coin {
 	
 	ArrayList<CoinPriceInformation> priceHistory;
 	
-	CoinCandle candlesPerOneMinute;
-	CoinCandle candlesPerThreeMinutes;
-	CoinCandle candlesPerFiveMinutes;
-	CoinCandle candlesPerFifteenMinutes;
-	CoinCandle candlesPerThirtyMinutes;
-	CoinCandle candlesPerSixtyMinutes;
+	CoinCandles candlesPerOneMinute;
+	CoinCandles candlesPerThreeMinutes;
+	CoinCandles candlesPerFiveMinutes;
+	CoinCandles candlesPerFifteenMinutes;
+	CoinCandles candlesPerThirtyMinutes;
+	CoinCandles candlesPerSixtyMinutes;
 	
 }

@@ -8,4 +8,12 @@ public class Wallet {
 	float totalBtc;
 	float totalDollar;
 	
+	public Wallet() {}
+	
+	public Wallet(float dolars, float btcs) {
+		totalDollar = dolars;
+		totalBtc = btcs;
+		currencies = new HashMap<String, Float>();
+	}
+	
 }

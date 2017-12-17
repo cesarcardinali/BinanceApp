@@ -41,7 +41,6 @@ public class GetPrice {
 	static float lastPrice;
 
 	public static void main(String[] args) throws Exception {
-		String apiKey = "KQr3QBcMFKxqzDnwI9SOGvAmufR3xCC0YOfVsEdGOsqABzSCurr7N2rzIMkAeffY";
 		URL url = new URL(API_URL + TICKER_24H + "?symbol=IOTABTC");
 		URLConnection uc = url.openConnection();
 		uc.setRequestProperty("Content-Type", "application/json");

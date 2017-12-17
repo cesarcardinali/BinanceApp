@@ -1,5 +1,7 @@
 package models;
 
+import org.json.simple.JSONArray;
+
 public class CoinCandleTick {
 	/*
 	  [
@@ -28,4 +30,21 @@ public class CoinCandleTick {
 	int trades;
 	float takerBaseVolume;
 	float takerQuoteVolume;
+	
+	
+	public CoinCandleTick() {}
+	
+	
+	public CoinCandleTick(JSONArray data) {
+		openTime = Long.parseLong((String) data.get(0));
+		openPrice = Float.parseFloat((String) data.get(1));
+		highPrice = Float.parseFloat((String) data.get(2));
+		lowPrice = Float.parseFloat((String) data.get(3));
+		closePrice = Float.parseFloat((String) data.get(4));
+		closeTime = Long.parseLong((String) data.get(5));
+		volume = Float.parseFloat((String) data.get(6));
+		trades = Integer.parseInt((String) data.get(7));
+		takerBaseVolume = Float.parseFloat((String) data.get(8));
+		takerQuoteVolume = Float.parseFloat((String) data.get(9));
+	}
 }

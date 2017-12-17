@@ -1,5 +1,8 @@
 package models;
 
+import org.json.simple.JSONObject;
+
+// It contains information related to the last 24h
 public class CoinPriceInformation {
 	/*{
 	  "priceChange": "-94.99999800",
@@ -31,12 +34,36 @@ public class CoinPriceInformation {
 	float openPrice;
 	float highPrice;
 	float lowPrice;
-	float volume;
+	float volume; // How many coins
 	long openTime;
 	long closeTime;
 	long firstId;
 	long lastId;
-	long count;
+	long count;  // # of Trades
+	
+	
+	// Constructors ---------------------------------------------------------------------------------------
+	public CoinPriceInformation() {	}
+	
+	public CoinPriceInformation(JSONObject data) {
+		priceChange = Float.parseFloat((String) data.get("priceChange"));
+		priceChangePercent = Float.parseFloat((String) data.get("priceChangePercent"));
+		weightedAvgPrice = Float.parseFloat((String) data.get("weightedAvgPrice"));
+		prevClosePrice = Float.parseFloat((String) data.get("prevClosePrice"));
+		lastPrice = Float.parseFloat((String) data.get("lastPrice"));
+		bidPrice = Float.parseFloat((String) data.get("bidPrice"));
+		askPrice = Float.parseFloat((String) data.get("askPrice"));
+		openPrice = Float.parseFloat((String) data.get("openPrice"));
+		highPrice = Float.parseFloat((String) data.get("highPrice"));
+		lowPrice = Float.parseFloat((String) data.get("lowPrice"));
+		volume = Float.parseFloat((String) data.get("volume"));
+		
+		openTime = Long.parseLong((String) data.get("openTime"));
+		closeTime = Long.parseLong((String) data.get("closeTime"));
+		lastId = Long.parseLong((String) data.get("lastId"));
+		firstId = Long.parseLong((String) data.get("firstId"));
+		count = Long.parseLong((String) data.get("count"));
+	}
 
 	
 	// Main Methods --------------------------------------------------------------------------------------
