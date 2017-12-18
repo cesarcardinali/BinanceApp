@@ -1,4 +1,4 @@
-package main;
+
 
 import java.awt.Toolkit;
 import java.io.BufferedReader;

@@ -1,18 +1,18 @@
 package ui;
 
-import javax.swing.JPanel;
-import models.AppData;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
+import javax.swing.JPanel;
+import models.AppData;
 
 
-public class MainScreen extends JPanel {
+public class WalletScreen extends JPanel {
 
 	private AppData appData;
 
 
-	public MainScreen(AppData appData) {
+	public WalletScreen(AppData appData) {
 		this.appData = appData;
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -22,7 +22,7 @@ public class MainScreen extends JPanel {
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
-		JLabel lblMain = new JLabel("Main");
+		JLabel lblMain = new JLabel("Wallet");
 		GridBagConstraints gbc_lblMain = new GridBagConstraints();
 		gbc_lblMain.gridx = 6;
 		gbc_lblMain.gridy = 4;
