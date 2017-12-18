@@ -14,6 +14,8 @@ public class TrailingOrder implements Runnable {
 	BinanceApi binance;
 	boolean done = false;
 	String symbol;
+	float startPrice;
+	float stopPrice;
 	float trailPrice;
 	float dropLimit;
 	float quantity;
@@ -22,6 +24,7 @@ public class TrailingOrder implements Runnable {
 	float lastPrice;
 	boolean percentage = false;
 	boolean alert = false;
+	long startTime;
 
 
 	public TrailingOrder(AppData appData, String symbol, String start, String dropLimit, String quantity) {
@@ -38,6 +41,8 @@ public class TrailingOrder implements Runnable {
 		}
 		dropLimit.replace("%", "");
 		this.trailPrice = Float.parseFloat(start);
+		startPrice = trailPrice;
+		stopPrice = 999999999;
 		this.dropLimit = Float.parseFloat(dropLimit);
 		this.quantity = Float.parseFloat(quantity);
 	}
@@ -54,7 +59,8 @@ public class TrailingOrder implements Runnable {
 	@Override
 	public void run() {
 		Coin coin = null;
-		DecimalFormat df = new DecimalFormat("#.#######0");
+		DecimalFormat df = new DecimalFormat("#.########");
+		startTime = System.currentTimeMillis();
 		
 		while (done != true) {
 			if (wallet.getCurrencies() != null && wallet.getCurrencies().containsKey(symbol)) {
@@ -82,7 +88,7 @@ public class TrailingOrder implements Runnable {
 
 			System.out.println("My price: " + df.format(trailPrice));
 			System.out.println("Coin price: " + df.format(actualPrice));
-			System.out.println("Limit : " + df.format(actualPrice - dropLimit));
+			System.out.println("Limit : " + df.format(trailPrice - dropLimit));
 
 			if (percentage) {
 
@@ -91,7 +97,7 @@ public class TrailingOrder implements Runnable {
 					trailPrice = actualPrice;
 					System.out.println("Updating price to " + trailPrice);
 				} else {
-					if (actualPrice < trailPrice - dropLimit) {
+					if (actualPrice < trailPrice - dropLimit || actualPrice < stopPrice) {
 						if (alert == false) {
 							alert = true;
 							System.out.println("Alert for possible selling at " + df.format(actualPrice));
@@ -103,6 +109,13 @@ public class TrailingOrder implements Runnable {
 						System.out.println("Still better than limit\nPrice: " + df.format(actualPrice) + "   -  Limit: " + df.format(trailPrice - dropLimit));
 						alert = false;
 					}
+				}
+			}
+			
+			if (System.currentTimeMillis() - startTime > 2 * 60 * 1000) {
+				if (dropLimit < startPrice) {
+					stopPrice = (float) (startPrice * 1.0021);
+					System.out.println("Stop price activated");
 				}
 			}
 

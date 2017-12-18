@@ -129,7 +129,7 @@ public class OrdersScreen extends JPanel {
 		txtTrailingBuyValue.setColumns(10);
 
 		txtTrailingDropLimit = new JTextField();
-		txtTrailingDropLimit.setText("0.000015");
+		txtTrailingDropLimit.setText("0.0000015");
 		txtTrailingDropLimit.setColumns(10);
 		GridBagConstraints gbc_txtTrailingDropLimit = new GridBagConstraints();
 		gbc_txtTrailingDropLimit.insets = new Insets(0, 0, 5, 5);
