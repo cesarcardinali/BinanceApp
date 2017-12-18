@@ -19,11 +19,11 @@ public class OrdersScreen extends JPanel {
 
 	private AppData appData;
 	
-	private JTextField startValue;
-	private JTextField dropLimit;
-	private JTextField textField_4;
-	private JTextField textField_5;
-	private JTextField textField_6;
+	private JTextField txtTrailingBuyValue;
+	private JTextField txtTrailingDropLimit;
+	private JTextField txtStopGainLimit;
+	private JTextField txtStopLowLimit;
+	private JTextField txtStopBuyLimit;
 	private JTextField txtCoinName;
 	private JTextField txtCoinAmount;
 	private JButton btnAddStopLimit;
@@ -114,23 +114,23 @@ public class OrdersScreen extends JPanel {
 		gbc_lblDropLimit.gridy = 5;
 		add(lblDropLimit, gbc_lblDropLimit);
 
-		startValue = new JTextField();
-		GridBagConstraints gbc_startValue = new GridBagConstraints();
-		gbc_startValue.insets = new Insets(0, 0, 5, 5);
-		gbc_startValue.fill = GridBagConstraints.HORIZONTAL;
-		gbc_startValue.gridx = 0;
-		gbc_startValue.gridy = 6;
-		add(startValue, gbc_startValue);
-		startValue.setColumns(10);
+		txtTrailingBuyValue = new JTextField();
+		GridBagConstraints gbc_txtTrailingBuyValue = new GridBagConstraints();
+		gbc_txtTrailingBuyValue.insets = new Insets(0, 0, 5, 5);
+		gbc_txtTrailingBuyValue.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtTrailingBuyValue.gridx = 0;
+		gbc_txtTrailingBuyValue.gridy = 6;
+		add(txtTrailingBuyValue, gbc_txtTrailingBuyValue);
+		txtTrailingBuyValue.setColumns(10);
 
-		dropLimit = new JTextField();
-		dropLimit.setColumns(10);
-		GridBagConstraints gbc_dropLimit = new GridBagConstraints();
-		gbc_dropLimit.insets = new Insets(0, 0, 5, 5);
-		gbc_dropLimit.fill = GridBagConstraints.HORIZONTAL;
-		gbc_dropLimit.gridx = 1;
-		gbc_dropLimit.gridy = 6;
-		add(dropLimit, gbc_dropLimit);
+		txtTrailingDropLimit = new JTextField();
+		txtTrailingDropLimit.setColumns(10);
+		GridBagConstraints gbc_txtTrailingDropLimit = new GridBagConstraints();
+		gbc_txtTrailingDropLimit.insets = new Insets(0, 0, 5, 5);
+		gbc_txtTrailingDropLimit.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtTrailingDropLimit.gridx = 1;
+		gbc_txtTrailingDropLimit.gridy = 6;
+		add(txtTrailingDropLimit, gbc_txtTrailingDropLimit);
 
 		btnAddTrailingStop = new JButton("Add");
 		GridBagConstraints gbc_btnAddTrailingStop = new GridBagConstraints();
@@ -168,32 +168,32 @@ public class OrdersScreen extends JPanel {
 		gbc_label_3.gridy = 9;
 		add(label_3, gbc_label_3);
 
-		textField_6 = new JTextField();
-		textField_6.setColumns(10);
-		GridBagConstraints gbc_textField_6 = new GridBagConstraints();
-		gbc_textField_6.insets = new Insets(0, 0, 0, 5);
-		gbc_textField_6.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_6.gridx = 0;
-		gbc_textField_6.gridy = 10;
-		add(textField_6, gbc_textField_6);
+		txtStopBuyLimit = new JTextField();
+		txtStopBuyLimit.setColumns(10);
+		GridBagConstraints gbc_txtStopBuyLimit = new GridBagConstraints();
+		gbc_txtStopBuyLimit.insets = new Insets(0, 0, 0, 5);
+		gbc_txtStopBuyLimit.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtStopBuyLimit.gridx = 0;
+		gbc_txtStopBuyLimit.gridy = 10;
+		add(txtStopBuyLimit, gbc_txtStopBuyLimit);
 
-		textField_5 = new JTextField();
-		textField_5.setColumns(10);
-		GridBagConstraints gbc_textField_5 = new GridBagConstraints();
-		gbc_textField_5.insets = new Insets(0, 0, 0, 5);
-		gbc_textField_5.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_5.gridx = 1;
-		gbc_textField_5.gridy = 10;
-		add(textField_5, gbc_textField_5);
+		txtStopLowLimit = new JTextField();
+		txtStopLowLimit.setColumns(10);
+		GridBagConstraints gbc_txtStopLowLimit = new GridBagConstraints();
+		gbc_txtStopLowLimit.insets = new Insets(0, 0, 0, 5);
+		gbc_txtStopLowLimit.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtStopLowLimit.gridx = 1;
+		gbc_txtStopLowLimit.gridy = 10;
+		add(txtStopLowLimit, gbc_txtStopLowLimit);
 
-		textField_4 = new JTextField();
-		textField_4.setColumns(10);
-		GridBagConstraints gbc_textField_4 = new GridBagConstraints();
-		gbc_textField_4.insets = new Insets(0, 0, 0, 5);
-		gbc_textField_4.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_4.gridx = 2;
-		gbc_textField_4.gridy = 10;
-		add(textField_4, gbc_textField_4);
+		txtStopGainLimit = new JTextField();
+		txtStopGainLimit.setColumns(10);
+		GridBagConstraints gbc_txtStopGainLimit = new GridBagConstraints();
+		gbc_txtStopGainLimit.insets = new Insets(0, 0, 0, 5);
+		gbc_txtStopGainLimit.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtStopGainLimit.gridx = 2;
+		gbc_txtStopGainLimit.gridy = 10;
+		add(txtStopGainLimit, gbc_txtStopGainLimit);
 
 		btnAddStopLimit = new JButton("Add");
 		GridBagConstraints gbc_btnAddStopLimit = new GridBagConstraints();
@@ -208,13 +208,16 @@ public class OrdersScreen extends JPanel {
 	private void configureBtns() {
 		btnAddTrailingStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				String coin = txtCoinName.getText();
+				String quantity = txtCoinAmount.getText();
 			}
 		});
 
 		btnAddStopLimit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				String coin = txtCoinName.getText();
+				String quantity = txtCoinAmount.getText();
+				
 			}
 		});
 	}
