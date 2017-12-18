@@ -1,7 +1,6 @@
 package models;
 
 import supportive.BinanceApi;
-import ui.MainScreen;
 import ui.MainWindow;
 
 
@@ -46,12 +45,12 @@ public class AppData {
 	}
 
 
-	public Wallet getAppData() {
+	public Wallet getWallet() {
 		return wallet;
 	}
 
 
-	public void setAppData(Wallet appData) {
+	public void setWallet(Wallet appData) {
 		this.wallet = appData;
 	}
 	// -----------------------------------------------------------------------------------------------------------------------------

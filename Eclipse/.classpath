@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="C:/Java Libraries/commons-codec-1.11/commons-codec-1.11.jar"/>
-	<classpathentry kind="lib" path="C:/Java Libraries/json-simple/json-simple-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/cesarc/Documents/Cesar/Dev/BinanceApp/Eclipse/libs/commons-codec-1.11/commons-codec-1.11.jar"/>
+	<classpathentry kind="lib" path="C:/Users/cesarc/Documents/Cesar/Dev/BinanceApp/Eclipse/libs/json-simple/json-simple-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

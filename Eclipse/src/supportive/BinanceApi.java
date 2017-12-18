@@ -136,6 +136,7 @@ public class BinanceApi {
 			JSONObject json = (JSONObject) new JSONParser().parse(line);
 			
 			info = new CoinPriceInformation(json);
+			System.out.println(info.toString());
 		}
 		br.close();
 		

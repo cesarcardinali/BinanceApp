@@ -1,12 +1,24 @@
 package monitors;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import models.AppData;
+import models.Coin;
+import models.Wallet;
+import org.json.simple.parser.ParseException;
+import supportive.BinanceApi;
 
 
-// Monitor subidas e descidas de preco de uma moeda
+// Monitora subidas e descidas de preco de uma moeda
 public class CoinMonitor {
 
+	AppData appData;
+	BinanceApi binance;
+	Wallet wallet;
+	Coin coin;
+	
 	String monitoredCoin;
+	boolean running = false;
 
 
 	public CoinMonitor(AppData data) {
@@ -15,6 +27,35 @@ public class CoinMonitor {
 
 	public CoinMonitor(AppData data, String coinSymbol) {
 		monitoredCoin = coinSymbol;
+		this.appData = data;
+		binance = appData.getBinance();
+		wallet = appData.getWallet();
+	}
+
+
+	public void monitor() {
+		running = true;
+		coin = new Coin();
+	
+		while (running) {
+			try {
+				coin.updatePrices(binance.getPriceUpdate(monitoredCoin));
+				
+				
+			} catch (MalformedURLException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
+			
+			
+			try {
+				Thread.sleep(1500);
+			} catch (InterruptedException e) {
+			}
+		}
 	}
 
 }
