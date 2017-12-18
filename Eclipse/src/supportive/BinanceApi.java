@@ -126,7 +126,7 @@ public class BinanceApi {
 	
 	public CoinPriceInformation getPriceUpdate(String coinSymbol) throws MalformedURLException, IOException, ParseException {
 		CoinPriceInformation info = null;
-		URL url = new URL(API_URL + TICKER_24H + "?symbol=" + coinSymbol + "&interval=1m&limit=2");
+		URL url = new URL(API_URL + TICKER_24H + "?symbol=" + coinSymbol);
 		URLConnection uc = getConnection(url);
 
 		InputStreamReader inputStreamReader = new InputStreamReader(uc.getInputStream());

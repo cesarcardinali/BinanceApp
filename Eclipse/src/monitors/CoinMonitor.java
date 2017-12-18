@@ -10,7 +10,7 @@ import supportive.BinanceApi;
 
 
 // Monitora subidas e descidas de preco de uma moeda
-public class CoinMonitor {
+public class CoinMonitor implements Runnable {
 
 	AppData appData;
 	BinanceApi binance;
@@ -56,6 +56,12 @@ public class CoinMonitor {
 			} catch (InterruptedException e) {
 			}
 		}
+	}
+
+
+	@Override
+	public void run() {
+		monitor();
 	}
 
 }

@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import models.AppData;
+import monitors.CoinMonitor;
 
 
 public class OrdersScreen extends JPanel {
@@ -210,6 +211,10 @@ public class OrdersScreen extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				String coin = txtCoinName.getText();
 				String quantity = txtCoinAmount.getText();
+				
+				// TODO remove it (teste)
+				Thread iotaMonitor = new Thread(new CoinMonitor(appData, coin));
+				iotaMonitor.start();
 			}
 		});
 
@@ -220,5 +225,6 @@ public class OrdersScreen extends JPanel {
 				
 			}
 		});
+		
 	}
 }

@@ -47,11 +47,11 @@ public class CoinPriceInformation {
 		lowPrice = Float.parseFloat((String) data.get("lowPrice"));
 		volume = Float.parseFloat((String) data.get("volume"));
 
-		openTime = Long.parseLong((String) data.get("openTime"));
-		closeTime = Long.parseLong((String) data.get("closeTime"));
-		lastId = Long.parseLong((String) data.get("lastId"));
-		firstId = Long.parseLong((String) data.get("firstId"));
-		count = Long.parseLong((String) data.get("count"));
+		openTime = (long) data.get("openTime");
+		closeTime = (long) data.get("closeTime");
+		lastId = (long) data.get("lastId");
+		firstId = (long) data.get("firstId");
+		count = (long) data.get("count");
 	}
 
 
