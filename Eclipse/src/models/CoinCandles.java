@@ -7,17 +7,17 @@ import org.json.simple.JSONArray;
 
 public class CoinCandles {
 	// Variables
-	ArrayList<CoinCandleTick> candles;
+	ArrayList<CoinCandleTick> candleTicks;
 	// ------------------------------------------------------------------------------------------
 
 	
-	// Constructors
+	// Constructors -----------------------------------------------------------------------------
 	public CoinCandles(JSONArray data) {
-		candles = new ArrayList<CoinCandleTick>();
+		candleTicks = new ArrayList<CoinCandleTick>();
 		
 		for(int i = 0; i < data.size(); i++) {
 			JSONArray tick = (JSONArray) data.get(i);
-			candles.add(new CoinCandleTick(tick));
+			candleTicks.add(new CoinCandleTick(tick));
 		}
 	}
 
@@ -25,4 +25,14 @@ public class CoinCandles {
 
 	}
 	// ------------------------------------------------------------------------------------------
+
+	
+	public ArrayList<CoinCandleTick> getCandles() {
+		return candleTicks;
+	}
+
+	
+	public void setCandles(ArrayList<CoinCandleTick> candles) {
+		this.candleTicks = candles;
+	}
 }

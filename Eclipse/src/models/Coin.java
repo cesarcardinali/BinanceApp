@@ -33,16 +33,33 @@ public class Coin {
 	}
 
 
+	public void updateOneMinuteCandle(CoinCandles candle) {
+		if (priceHistory.size() >= 50) {
+			priceHistory.remove(0);
+		}
+
+		candlesPerOneMinute = candle;
+
+	}
+
+
 	public float getLastClosePrice() {
 		float price = -1;
-		price = priceHistory.get(priceHistory.size() - 2).getPrevClosePrice();
+		if(candlesPerOneMinute != null) {
+			System.out.println("candles " + candlesPerOneMinute.getCandles().size());
+			price = candlesPerOneMinute.getCandles().get(candlesPerOneMinute.getCandles().size() - 2).getClosePrice();
+		}
 
 		return price;
 	}
-	
+
+
 	public float getActualClosePrice() {
 		float price = -1;
-		price = priceHistory.get(priceHistory.size() - 1).getPrevClosePrice();
+		if(candlesPerOneMinute != null) {
+			System.out.println("candles " + candlesPerOneMinute.getCandles().size());
+			price = candlesPerOneMinute.getCandles().get(candlesPerOneMinute.getCandles().size() - 1).getClosePrice();
+		}	
 
 		return price;
 	}

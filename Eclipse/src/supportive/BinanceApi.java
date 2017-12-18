@@ -9,20 +9,16 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.text.DecimalFormat;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.HttpsURLConnection;
-
+import models.CoinCandles;
+import models.CoinPriceInformation;
 import org.apache.commons.codec.binary.Hex;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-import models.CoinCandles;
-import models.CoinPriceInformation;
 
 public class BinanceApi {	
 	// Variables -----------------------------------------------------------------------
@@ -136,7 +132,6 @@ public class BinanceApi {
 			JSONObject json = (JSONObject) new JSONParser().parse(line);
 			
 			info = new CoinPriceInformation(json);
-			System.out.println(info.toString());
 		}
 		br.close();
 		

@@ -14,6 +14,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import models.AppData;
 import monitors.CoinMonitor;
+import actuators.TrailingOrder;
 
 
 public class OrdersScreen extends JPanel {
@@ -59,6 +60,7 @@ public class OrdersScreen extends JPanel {
 		add(label_6, gbc_label_6);
 
 		txtCoinName = new JTextField();
+		txtCoinName.setText("IOTABTC");
 		txtCoinName.setColumns(10);
 		GridBagConstraints gbc_txtCoinName = new GridBagConstraints();
 		gbc_txtCoinName.insets = new Insets(0, 0, 5, 5);
@@ -76,6 +78,7 @@ public class OrdersScreen extends JPanel {
 		add(label_7, gbc_label_7);
 
 		txtCoinAmount = new JTextField();
+		txtCoinAmount.setText("10");
 		txtCoinAmount.setColumns(10);
 		GridBagConstraints gbc_txtCoinAmount = new GridBagConstraints();
 		gbc_txtCoinAmount.insets = new Insets(0, 0, 5, 5);
@@ -116,6 +119,7 @@ public class OrdersScreen extends JPanel {
 		add(lblDropLimit, gbc_lblDropLimit);
 
 		txtTrailingBuyValue = new JTextField();
+		txtTrailingBuyValue.setText("0.00021");
 		GridBagConstraints gbc_txtTrailingBuyValue = new GridBagConstraints();
 		gbc_txtTrailingBuyValue.insets = new Insets(0, 0, 5, 5);
 		gbc_txtTrailingBuyValue.fill = GridBagConstraints.HORIZONTAL;
@@ -125,6 +129,7 @@ public class OrdersScreen extends JPanel {
 		txtTrailingBuyValue.setColumns(10);
 
 		txtTrailingDropLimit = new JTextField();
+		txtTrailingDropLimit.setText("0.000015");
 		txtTrailingDropLimit.setColumns(10);
 		GridBagConstraints gbc_txtTrailingDropLimit = new GridBagConstraints();
 		gbc_txtTrailingDropLimit.insets = new Insets(0, 0, 5, 5);
@@ -211,17 +216,25 @@ public class OrdersScreen extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				String coin = txtCoinName.getText();
 				String quantity = txtCoinAmount.getText();
+				String start = txtTrailingBuyValue.getText();
+				String drop = txtTrailingDropLimit.getText();
 				
 				// TODO remove it (teste)
 				Thread iotaMonitor = new Thread(new CoinMonitor(appData, coin));
 				iotaMonitor.start();
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				Thread iotaTrailing = new Thread(new TrailingOrder(appData, coin, start, drop, quantity));
+				iotaTrailing.start();
+				// END --------
 			}
 		});
 
 		btnAddStopLimit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String coin = txtCoinName.getText();
-				String quantity = txtCoinAmount.getText();
 				
 			}
 		});

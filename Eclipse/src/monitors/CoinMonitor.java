@@ -35,11 +35,20 @@ public class CoinMonitor implements Runnable {
 
 	public void monitor() {
 		running = true;
+		/*if (wallet.getCurrencies().containsKey(monitoredCoin)) {
+			coin = wallet.getCurrencies().get(monitoredCoin);
+		} else {
+			coin = new Coin();
+		}*/
+		
 		coin = new Coin();
+		wallet.getCurrencies().put(monitoredCoin, coin);
 	
 		while (running) {
 			try {
 				coin.updatePrices(binance.getPriceUpdate(monitoredCoin));
+				coin.updateOneMinuteCandle(binance.getCoinCandle(monitoredCoin, "1m", "120"));
+				System.out.println("Prices updated!");
 				
 				
 			} catch (MalformedURLException e1) {
