@@ -30,15 +30,16 @@ public class OrdersScreen extends JPanel {
 	private JTextField txtCoinAmount;
 	private JButton btnAddStopLimit;
 	private JButton btnAddTrailingStop;
+	private JButton btnStop;
 
 
 	public OrdersScreen(AppData appData) {
 		this.appData = appData;
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0 };
+		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 1.0, 1.0, 1.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.columnWeights = new double[] { 1.0, 1.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
@@ -140,10 +141,17 @@ public class OrdersScreen extends JPanel {
 
 		btnAddTrailingStop = new JButton("Add");
 		GridBagConstraints gbc_btnAddTrailingStop = new GridBagConstraints();
-		gbc_btnAddTrailingStop.insets = new Insets(0, 0, 5, 0);
+		gbc_btnAddTrailingStop.insets = new Insets(0, 0, 5, 5);
 		gbc_btnAddTrailingStop.gridx = 3;
 		gbc_btnAddTrailingStop.gridy = 6;
 		add(btnAddTrailingStop, gbc_btnAddTrailingStop);
+		
+		btnStop = new JButton("Stop");
+		GridBagConstraints gbc_btnStop = new GridBagConstraints();
+		gbc_btnStop.insets = new Insets(0, 0, 5, 0);
+		gbc_btnStop.gridx = 4;
+		gbc_btnStop.gridy = 6;
+		add(btnStop, gbc_btnStop);
 
 		JLabel label = new JLabel("Stop Limit Ratio");
 		label.setFont(new Font("Tahoma", Font.BOLD, 12));
@@ -203,6 +211,7 @@ public class OrdersScreen extends JPanel {
 
 		btnAddStopLimit = new JButton("Add");
 		GridBagConstraints gbc_btnAddStopLimit = new GridBagConstraints();
+		gbc_btnAddStopLimit.insets = new Insets(0, 0, 0, 5);
 		gbc_btnAddStopLimit.gridx = 3;
 		gbc_btnAddStopLimit.gridy = 10;
 		add(btnAddStopLimit, gbc_btnAddStopLimit);
@@ -239,5 +248,11 @@ public class OrdersScreen extends JPanel {
 			}
 		});
 		
+		
+		btnStop.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				appData.stopAllTrailings();
+			}
+		});
 	}
 }

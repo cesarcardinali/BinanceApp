@@ -98,7 +98,6 @@ public class LoginPane extends JPanel {
 
 	private void configureBtns() {
 		btnDone.addActionListener(new ActionListener() {
-
 			public void actionPerformed(ActionEvent arg0) {
 				String apiKey;
 				String apiSecret;
@@ -107,10 +106,8 @@ public class LoginPane extends JPanel {
 				} else {
 					apiKey = new String(key.getPassword());
 					apiSecret = new String(secret.getPassword());
+					
 					appData.logIn(apiKey, apiSecret);
-					System.out.println("loggedin");
-					System.out.println("key: " + apiKey);
-					System.out.println("sec: " + apiSecret);
 				}
 			}
 		});

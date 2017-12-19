@@ -1,6 +1,8 @@
 package models;
 
 import java.util.HashMap;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class Wallet {
 	
@@ -21,6 +23,15 @@ public class Wallet {
 	}
 
 	
+	public Wallet(JSONObject json) {
+		JSONArray coins = (JSONArray) json.get("balances");
+		for(int i = 0; i < coins.size(); i++) {
+			JSONObject coinData = (JSONObject) coins.get(i);
+			Coin tmp = new Coin(coinData);
+			currencies.put(tmp.getName(), tmp);
+		}
+	}
+
 	public HashMap<String, Coin> getCurrencies() {
 		return currencies;
 	}

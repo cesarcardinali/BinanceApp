@@ -48,7 +48,7 @@ public class CoinMonitor implements Runnable {
 			try {
 				coin.updatePrices(binance.getPriceUpdate(monitoredCoin));
 				coin.updateOneMinuteCandle(binance.getCoinCandle(monitoredCoin, "1m", "120"));
-				System.out.println("Prices updated!");
+				//System.out.println("Prices updated!");
 				
 				
 			} catch (MalformedURLException e1) {

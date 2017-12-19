@@ -1,5 +1,7 @@
 package models;
 
+import java.util.ArrayList;
+import actuators.TrailingOrder;
 import supportive.BinanceApi;
 import ui.MainWindow;
 
@@ -9,21 +11,47 @@ public class AppData {
 	Wallet wallet;
 	BinanceApi binance;
 	MainWindow ui;
+	
+	ArrayList<TrailingOrder> activeTrailings;
 
 
 	public AppData(MainWindow mainWindow) {
 		this.ui = mainWindow;
 		wallet = new Wallet();
+		
+		activeTrailings = new ArrayList<>();
 	}
 
 
 	// Main methods ----------------------------------------------------------------------------------------------------------------
-	public void logIn(String apiKey, String apiSecret) {
+	public boolean logIn(String apiKey, String apiSecret) {
 		binance = new BinanceApi(apiKey, apiSecret);
-		wallet = new Wallet();
-
-		ui.goToMainScreen();
-		ui.revalidate();
+		if (binance.isConnectionGood()) {
+			wallet = new Wallet();
+			
+			ui.goToMainScreen();
+			ui.revalidate();
+			
+			System.out.println("loggedin");
+			
+			return true;
+		} else {
+			System.out.println("log in FAILED!");
+		}
+		
+		return false;
+	}
+	
+	public void addTrailing(TrailingOrder t) {
+		activeTrailings.add(t);
+	}
+	
+	public void stopAllTrailings() {
+		for (TrailingOrder t : activeTrailings) {
+			t.cancel();
+			activeTrailings.remove(t);
+		}
+		
 	}
 	// -----------------------------------------------------------------------------------------------------------------------------
 

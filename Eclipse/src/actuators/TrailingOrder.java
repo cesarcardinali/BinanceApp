@@ -42,7 +42,7 @@ public class TrailingOrder implements Runnable {
 		dropLimit.replace("%", "");
 		this.trailPrice = Float.parseFloat(start);
 		startPrice = trailPrice;
-		stopPrice = 999999999;
+		stopPrice = 0;
 		this.dropLimit = Float.parseFloat(dropLimit);
 		this.quantity = Float.parseFloat(quantity);
 	}
@@ -88,7 +88,8 @@ public class TrailingOrder implements Runnable {
 
 			System.out.println("My price: " + df.format(trailPrice));
 			System.out.println("Coin price: " + df.format(actualPrice));
-			System.out.println("Limit : " + df.format(trailPrice - dropLimit));
+			System.out.println("Limit: " + df.format(trailPrice - dropLimit));
+			System.out.println("Trades: " + coin.getLastMinuteTrades());
 
 			if (percentage) {
 
@@ -108,16 +109,22 @@ public class TrailingOrder implements Runnable {
 					} else {
 						System.out.println("Still better than limit\nPrice: " + df.format(actualPrice) + "   -  Limit: " + df.format(trailPrice - dropLimit));
 						alert = false;
+						if(stopPrice > 0) {
+							System.out.println("Stop is activated to " + df.format(stopPrice) + ". May be selled before reaches low limit");
+						}
 					}
 				}
 			}
 			
-			if (System.currentTimeMillis() - startTime > 2 * 60 * 1000) {
-				if (dropLimit < startPrice) {
+			if (System.currentTimeMillis() - startTime > 2.5 * 60 * 1000) {
+				if (dropLimit < startPrice && stopPrice == 0) {
 					stopPrice = (float) (startPrice * 1.0021);
 					System.out.println("Stop price activated");
 				}
 			}
+			
+			
+			System.out.println("\n");
 
 
 			try {
@@ -125,5 +132,10 @@ public class TrailingOrder implements Runnable {
 			} catch (InterruptedException e) {
 			}
 		}
+	}
+
+
+	public void cancel() {
+		done = true;
 	}
 }

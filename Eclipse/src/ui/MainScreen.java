@@ -29,4 +29,8 @@ public class MainScreen extends JPanel {
 		add(lblMain, gbc_lblMain);
 
 	}
+	
+	public void init() {
+		
+	}
 }
