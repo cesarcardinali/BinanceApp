@@ -15,6 +15,8 @@ public class AppData {
 	BinanceApi binance;
 	MainWindow ui;
 	AccountStorage accs;
+	public long totalMoneyStart = 0;
+	public long totalMoneyCurrent = 0;
 	
 	ArrayList<TrailingOrder> activeTrailings;
 	ArrayList<CoinMonitor> coinMonitors;
