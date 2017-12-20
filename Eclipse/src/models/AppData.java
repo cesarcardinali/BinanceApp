@@ -59,14 +59,10 @@ public class AppData {
 			// Create wallet based on your Binance Acc
 			wallet = binance.getWallet();
 			
-			// Start monitors for the coins in your wallet
-			for (String c : wallet.getCurrencies().keySet()) {
-				if(c.equals("BCXBTC") || c.equals("SBTCBTC"))
-					continue;
-				CoinMonitor m = new CoinMonitor(this, c);
-				m.start();
-				coinMonitors.add(m);
-			}
+			// Start monitors
+			CoinMonitor cm = new CoinMonitor(this, "");
+			cm.start();
+			coinMonitors.add(cm);
 			
 			ui.goToMainScreen();
 			ui.revalidate();

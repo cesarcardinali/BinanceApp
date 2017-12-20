@@ -24,6 +24,7 @@ public class MainWindow extends JFrame {
 	private MainScreen mainScreen;
 	private OrdersScreen ordersScreen;
 	private WalletScreen walletScreen;
+	private MonitorScreen monitorScreen;
 
 	private JToggleButton tglbtnMain;
 	private JToggleButton tglbtnOrders;
@@ -121,7 +122,7 @@ public class MainWindow extends JFrame {
 
 
 	public void goToWalletScreen() {
-		if (walletScreen == null)
+		/*if (walletScreen == null)
 			walletScreen = new WalletScreen(appData);
 
 		if (topMenu.isVisible() == false)
@@ -131,7 +132,17 @@ public class MainWindow extends JFrame {
 		getContentPane().add(walletScreen, BorderLayout.CENTER);
 
 		repaint();
-		revalidate();
+		revalidate();*/
+		
+		if (monitorScreen == null) {
+			monitorScreen = new MonitorScreen(appData);
+			monitorScreen.setVisible(true);
+		} else {
+			monitorScreen.setVisible(true);
+		}
+
+		if (topMenu.isVisible() == false)
+			topMenu.setVisible(true);
 	}
 	// -----------------------------------------------------------------------------------------------------------------------------
 

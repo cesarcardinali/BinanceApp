@@ -35,29 +35,38 @@ public class CoinMonitor extends Thread implements Runnable {
 			coin = wallet.getCurrencies().get(monitoredCoin);
 		} else {
 			coin = new Coin();
+			System.out.println("new coin created into wallet");
 		}*/
-
-		coin = new Coin();
-		wallet.getCurrencies().put(monitoredCoin, coin);
-
+		System.out.println("Monitor started");
+		
 		while (running) {
-			try {
-				coin.updatePrices(binance.getPriceUpdate(monitoredCoin));
-				coin.updateOneMinuteCandle(binance.getCoinCandle(monitoredCoin, "1m", "120"));
-				//System.out.println("Prices updated!");
+			for (String c : wallet.getCurrencies().keySet()) {
+				coin = wallet.getCurrencies().get(c);
+				try {
+					monitoredCoin = c;
+					coin.updatePrices(binance.getPriceUpdate(monitoredCoin));
+					coin.updateOneMinuteCandle(binance.getCoinCandle(monitoredCoin, "1m", "120"));
+					coin.updateTrend3m();
+					//System.out.println("Prices updated!");
 
 
-			} catch (MalformedURLException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			} catch (ParseException e1) {
-				e1.printStackTrace();
+				} catch (MalformedURLException e1) {
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+
+
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {
+				}
 			}
-
-
+			
 			try {
-				Thread.sleep(1500);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 			}
 		}

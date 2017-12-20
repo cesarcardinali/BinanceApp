@@ -1,122 +1,180 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.text.DecimalFormat;
+import java.util.HashMap;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import ui.custom_items.MonitorLabel;
+import models.AppData;
+import models.Coin;
 
 
 public class MonitorScreen extends JFrame {
+
+	private AppData appData;
+	private HashMap<String, Coin> currencies;
+	
 	private JPanel panel;
 	private JLabel lblCoin;
 	private JLabel lblTrend;
 	private JLabel lblPrice;
 	private JLabel lblAvg;
 	private JLabel lblAvg_1;
-	private JPanel panel_1;
-	private JPanel panel_2;
-	private JPanel panel_3;
-	private JPanel panel_4;
-	private JPanel panel_5;
-	
-	private Thread uiThread; 
+	private JPanel panelCoins;
+	private JPanel panelTrend;
+	private JPanel panelPrice;
+	private JPanel panelAvg3;
+	private JPanel panelAvg8;
 
-	public MonitorScreen() {
-		setType(Type.POPUP);
+	private Thread uiThread;
+	private boolean active = false;
+
+
+	public MonitorScreen(AppData data) {
+		appData = data;
 		setTitle("Coins Monitor");
-		
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(200, 200, 800, 500);
+
 		panel = new JPanel();
 		getContentPane().add(panel, BorderLayout.CENTER);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{0, 0, 0, 0, 0, 0};
-		gbl_panel.rowHeights = new int[]{0, 0, 0};
-		gbl_panel.columnWeights = new double[]{1.0, 1.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+		gbl_panel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0 };
+		gbl_panel.rowHeights = new int[] { 0, 0, 0 };
+		gbl_panel.columnWeights = new double[] { 1.0, 1.0, 1.0, 1.0, 1.0, Double.MIN_VALUE };
+		gbl_panel.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
-		
+
 		lblCoin = new JLabel("Coin");
+		lblCoin.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblCoin = new GridBagConstraints();
 		gbc_lblCoin.insets = new Insets(0, 0, 5, 5);
 		gbc_lblCoin.gridx = 0;
 		gbc_lblCoin.gridy = 0;
 		panel.add(lblCoin, gbc_lblCoin);
-		
+
 		lblTrend = new JLabel("Trend");
+		lblTrend.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblTrend = new GridBagConstraints();
 		gbc_lblTrend.insets = new Insets(0, 0, 5, 5);
 		gbc_lblTrend.gridx = 1;
 		gbc_lblTrend.gridy = 0;
 		panel.add(lblTrend, gbc_lblTrend);
-		
+
 		lblPrice = new JLabel("Price");
+		lblPrice.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblPrice = new GridBagConstraints();
 		gbc_lblPrice.insets = new Insets(0, 0, 5, 5);
 		gbc_lblPrice.gridx = 2;
 		gbc_lblPrice.gridy = 0;
 		panel.add(lblPrice, gbc_lblPrice);
-		
+
 		lblAvg = new JLabel("Avg(3m)");
+		lblAvg.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblAvg = new GridBagConstraints();
 		gbc_lblAvg.insets = new Insets(0, 0, 5, 5);
 		gbc_lblAvg.gridx = 3;
 		gbc_lblAvg.gridy = 0;
 		panel.add(lblAvg, gbc_lblAvg);
-		
+
 		lblAvg_1 = new JLabel("Avg(8m)");
+		lblAvg_1.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblAvg_1 = new GridBagConstraints();
 		gbc_lblAvg_1.insets = new Insets(0, 0, 5, 0);
 		gbc_lblAvg_1.gridx = 4;
 		gbc_lblAvg_1.gridy = 0;
 		panel.add(lblAvg_1, gbc_lblAvg_1);
-		
-		panel_1 = new JPanel();
-		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
-		gbc_panel_1.insets = new Insets(0, 0, 0, 5);
-		gbc_panel_1.fill = GridBagConstraints.BOTH;
-		gbc_panel_1.gridx = 0;
-		gbc_panel_1.gridy = 1;
-		panel.add(panel_1, gbc_panel_1);
-		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
-		
-		panel_2 = new JPanel();
-		GridBagConstraints gbc_panel_2 = new GridBagConstraints();
-		gbc_panel_2.insets = new Insets(0, 0, 0, 5);
-		gbc_panel_2.fill = GridBagConstraints.BOTH;
-		gbc_panel_2.gridx = 1;
-		gbc_panel_2.gridy = 1;
-		panel.add(panel_2, gbc_panel_2);
-		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
-		
-		panel_3 = new JPanel();
-		GridBagConstraints gbc_panel_3 = new GridBagConstraints();
-		gbc_panel_3.insets = new Insets(0, 0, 0, 5);
-		gbc_panel_3.fill = GridBagConstraints.BOTH;
-		gbc_panel_3.gridx = 2;
-		gbc_panel_3.gridy = 1;
-		panel.add(panel_3, gbc_panel_3);
-		panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.X_AXIS));
-		
-		panel_4 = new JPanel();
-		GridBagConstraints gbc_panel_4 = new GridBagConstraints();
-		gbc_panel_4.insets = new Insets(0, 0, 0, 5);
-		gbc_panel_4.fill = GridBagConstraints.BOTH;
-		gbc_panel_4.gridx = 3;
-		gbc_panel_4.gridy = 1;
-		panel.add(panel_4, gbc_panel_4);
-		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
-		
-		panel_5 = new JPanel();
-		GridBagConstraints gbc_panel_5 = new GridBagConstraints();
-		gbc_panel_5.fill = GridBagConstraints.BOTH;
-		gbc_panel_5.gridx = 4;
-		gbc_panel_5.gridy = 1;
-		panel.add(panel_5, gbc_panel_5);
-		panel_5.setLayout(new BoxLayout(panel_5, BoxLayout.X_AXIS));
 
+		panelCoins = new JPanel();
+		GridBagConstraints gbc_panelCoins = new GridBagConstraints();
+		gbc_panelCoins.insets = new Insets(0, 0, 0, 5);
+		gbc_panelCoins.fill = GridBagConstraints.BOTH;
+		gbc_panelCoins.gridx = 0;
+		gbc_panelCoins.gridy = 1;
+		panel.add(panelCoins, gbc_panelCoins);
+		panelCoins.setLayout(new BoxLayout(panelCoins, BoxLayout.Y_AXIS));
+
+		panelTrend = new JPanel();
+		GridBagConstraints gbc_panelTrend = new GridBagConstraints();
+		gbc_panelTrend.insets = new Insets(0, 0, 0, 5);
+		gbc_panelTrend.fill = GridBagConstraints.BOTH;
+		gbc_panelTrend.gridx = 1;
+		gbc_panelTrend.gridy = 1;
+		panel.add(panelTrend, gbc_panelTrend);
+		panelTrend.setLayout(new BoxLayout(panelTrend, BoxLayout.Y_AXIS));
+
+		panelPrice = new JPanel();
+		GridBagConstraints gbc_panelPrice = new GridBagConstraints();
+		gbc_panelPrice.insets = new Insets(0, 0, 0, 5);
+		gbc_panelPrice.fill = GridBagConstraints.BOTH;
+		gbc_panelPrice.gridx = 2;
+		gbc_panelPrice.gridy = 1;
+		panel.add(panelPrice, gbc_panelPrice);
+		panelPrice.setLayout(new BoxLayout(panelPrice, BoxLayout.Y_AXIS));
+
+		panelAvg3 = new JPanel();
+		GridBagConstraints gbc_panelAvg3 = new GridBagConstraints();
+		gbc_panelAvg3.insets = new Insets(0, 0, 0, 5);
+		gbc_panelAvg3.fill = GridBagConstraints.BOTH;
+		gbc_panelAvg3.gridx = 3;
+		gbc_panelAvg3.gridy = 1;
+		panel.add(panelAvg3, gbc_panelAvg3);
+		panelAvg3.setLayout(new BoxLayout(panelAvg3, BoxLayout.Y_AXIS));
+
+		panelAvg8 = new JPanel();
+		GridBagConstraints gbc_panelAvg8 = new GridBagConstraints();
+		gbc_panelAvg8.fill = GridBagConstraints.BOTH;
+		gbc_panelAvg8.gridx = 4;
+		gbc_panelAvg8.gridy = 1;
+		panel.add(panelAvg8, gbc_panelAvg8);
+		panelAvg8.setLayout(new BoxLayout(panelAvg8, BoxLayout.Y_AXIS));
+
+		startUiThread();
 	}
 
+
+	private void startUiThread() {
+		active = true;
+		uiThread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				DecimalFormat df = new DecimalFormat("#.########");
+				while (active) {
+					currencies = appData.getWallet().getCurrencies();
+
+					panelCoins.removeAll();
+					panelPrice.removeAll();
+					panelAvg3.removeAll();
+					panelAvg8.removeAll();
+					panelTrend.removeAll();
+					
+					for (String c: currencies.keySet()){
+						panelCoins.add(new MonitorLabel(c));
+						Coin temp = currencies.get(c);
+						panelPrice.add(new MonitorLabel("" + df.format(temp.getPrice())));
+						panelTrend.add(new MonitorLabel(temp.getTrend3m()));
+					}
+					
+					repaint();
+					revalidate();
+					
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+
+		uiThread.start();
+	}
 }
