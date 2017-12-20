@@ -11,8 +11,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import models.AppData;
 
 
@@ -37,7 +35,7 @@ public class MainWindow extends JFrame {
 	public MainWindow() {
 		setTitle("BinanceFreakShow");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 738, 350);
+		setBounds(100, 100, 800, 500);
 
 		topMenu = new JPanel();
 		topMenu.setBackground(Color.GRAY);

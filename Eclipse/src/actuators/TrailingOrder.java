@@ -36,6 +36,7 @@ public class TrailingOrder implements Runnable {
 
 		if (dropLimit.contains("%")) {
 			percentage = true;
+			dropLimit = dropLimit.replace("%", "");
 		} else {
 			percentage = false;
 		}
@@ -56,12 +57,13 @@ public class TrailingOrder implements Runnable {
 		this.quantity = -1;
 	}
 
+
 	@Override
 	public void run() {
 		Coin coin = null;
 		DecimalFormat df = new DecimalFormat("#.########");
 		startTime = System.currentTimeMillis();
-		
+
 		while (done != true) {
 			if (wallet.getCurrencies() != null && wallet.getCurrencies().containsKey(symbol)) {
 				coin = wallet.getCurrencies().get(symbol);
@@ -73,11 +75,11 @@ public class TrailingOrder implements Runnable {
 				}
 				continue;
 			}
-			
+
 			lastPrice = coin.getLastClosePrice();
 			actualPrice = coin.getActualClosePrice();
-			
-			if(lastPrice == -1 || actualPrice == -1){
+
+			if (lastPrice == -1 || actualPrice == -1) {
 				System.out.println("Prices unkown");
 				try {
 					Thread.sleep(1000);
@@ -85,50 +87,54 @@ public class TrailingOrder implements Runnable {
 				}
 				continue;
 			}
+			
+			if (percentage) {
+				dropLimit = trailPrice * dropLimit / 100;
+			}
 
 			System.out.println("My price: " + df.format(trailPrice));
 			System.out.println("Coin price: " + df.format(actualPrice));
 			System.out.println("Limit: " + df.format(trailPrice - dropLimit));
 			System.out.println("Trades: " + coin.getLastMinuteTrades());
 
-			if (percentage) {
-
+			if (actualPrice > trailPrice) {
+				trailPrice = actualPrice;
+				if (percentage) {
+					dropLimit = trailPrice * dropLimit / 100;
+				}
+				System.out.println("Updating price to " + trailPrice);
 			} else {
-				if (actualPrice > trailPrice) {
-					trailPrice = actualPrice;
-					System.out.println("Updating price to " + trailPrice);
-				} else {
-					if (actualPrice < trailPrice - dropLimit || actualPrice < stopPrice) {
-						if (alert == false) {
-							alert = true;
-							System.out.println("Alert for possible selling at " + df.format(actualPrice));
-						} else {
-							System.out.println("Selling for " + df.format(actualPrice));
-							done = true;
-						}
+				if (actualPrice < trailPrice - dropLimit || actualPrice < stopPrice) {
+					if (alert == false) {
+						alert = true;
+						System.out.println("Alert for possible selling at " + df.format(actualPrice));
 					} else {
-						System.out.println("Still better than limit\nPrice: " + df.format(actualPrice) + "   -  Limit: " + df.format(trailPrice - dropLimit));
-						alert = false;
-						if(stopPrice > 0) {
-							System.out.println("Stop is activated to " + df.format(stopPrice) + ". May be selled before reaches low limit");
-						}
+						System.out.println("Selling for " + df.format(actualPrice));
+						done = true;
+					}
+				} else {
+					System.out.println("Still better than limit\nPrice: " + df.format(actualPrice) + "   -  Limit: " + df.format(trailPrice - dropLimit));
+					alert = false;
+					if (stopPrice > 0) {
+						System.out.println("Stop is activated to " + df.format(stopPrice) + ". May be selled before reaches low limit");
 					}
 				}
 			}
-			
+
+
 			if (System.currentTimeMillis() - startTime > 2.5 * 60 * 1000) {
 				if (dropLimit < startPrice && stopPrice == 0) {
 					stopPrice = (float) (startPrice * 1.0021);
 					System.out.println("Stop price activated");
 				}
 			}
-			
-			
+
+
 			System.out.println("\n");
 
 
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 			}
 		}
