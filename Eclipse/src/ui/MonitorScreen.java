@@ -1,14 +1,13 @@
 package ui;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
-import java.awt.GridBagLayout;
-import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import javax.swing.BoxLayout;
-import java.awt.Window.Type;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 
 public class MonitorScreen extends JFrame {
@@ -23,6 +22,8 @@ public class MonitorScreen extends JFrame {
 	private JPanel panel_3;
 	private JPanel panel_4;
 	private JPanel panel_5;
+	
+	private Thread uiThread; 
 
 	public MonitorScreen() {
 		setType(Type.POPUP);

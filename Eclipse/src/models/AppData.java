@@ -59,7 +59,11 @@ public class AppData {
 			
 			// Start monitors for the coins in your wallet
 			for (String c : wallet.getCurrencies().keySet()) {
+				if(c.equals("BCXBTC") || c.equals("SBTCBTC"))
+					continue;
 				CoinMonitor m = new CoinMonitor(this, c);
+				m.start();
+				coinMonitors.add(m);
 			}
 			
 			ui.goToMainScreen();
@@ -93,7 +97,7 @@ public class AppData {
 	
 	public void stopAllMonitors() {
 		for (CoinMonitor m : coinMonitors) {
-			m.stop();
+			m.stopMonitor();
 			coinMonitors.remove(m);
 		}
 		

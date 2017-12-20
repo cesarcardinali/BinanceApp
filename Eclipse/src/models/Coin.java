@@ -82,7 +82,6 @@ public class Coin {
 	public float getLastClosePrice() {
 		float price = -1;
 		if(candlesPerOneMinute != null) {
-			System.out.println("candles " + candlesPerOneMinute.getCandles().size());
 			price = candlesPerOneMinute.getCandles().get(candlesPerOneMinute.getCandles().size() - 2).getClosePrice();
 		}
 
@@ -93,7 +92,6 @@ public class Coin {
 	public float getActualClosePrice() {
 		price = -1;
 		if(candlesPerOneMinute != null) {
-			System.out.println("candles " + candlesPerOneMinute.getCandles().size());
 			price = candlesPerOneMinute.getCandles().get(candlesPerOneMinute.getCandles().size() - 1).getClosePrice();
 		}	
 

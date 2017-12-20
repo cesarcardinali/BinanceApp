@@ -13,6 +13,7 @@ public class TrailingOrder implements Runnable {
 	AppData appData;
 	Wallet wallet;
 	BinanceApi binance;
+	
 	boolean done = false;
 	String symbol;
 	float startPrice;
@@ -64,7 +65,7 @@ public class TrailingOrder implements Runnable {
 		Coin coin = null;
 		DecimalFormat df = new DecimalFormat("#.########");
 		startTime = System.currentTimeMillis();
-		
+
 		if (!appData.hasMonitor(symbol)) {
 			CoinMonitor mon = new CoinMonitor(appData, symbol);
 			Thread monitor = new Thread(mon);
@@ -95,11 +96,12 @@ public class TrailingOrder implements Runnable {
 				}
 				continue;
 			}
-			
+
 			if (percentage) {
 				dropLimit = trailPrice * dropLimit / 100;
 			}
 
+			System.out.println(symbol);
 			System.out.println("My price: " + df.format(trailPrice));
 			System.out.println("Coin price: " + df.format(actualPrice));
 			System.out.println("Limit: " + df.format(trailPrice - dropLimit));
@@ -146,7 +148,7 @@ public class TrailingOrder implements Runnable {
 			} catch (InterruptedException e) {
 			}
 		}
-		
+
 		System.out.println(symbol + " trailing stopped");
 	}
 
