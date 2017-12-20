@@ -31,7 +31,7 @@ public class BinanceApi {
 	final String ORDER_URL = "api/v3/order";
 	final String TICKER_24H = "api/v1/ticker/24hr";
 	final String SERVER_TIME = "api/v1/time";
-	final String ACCOUNT = "/api/v3/account";
+	final String ACCOUNT = "api/v3/account";
 
 	final String TIME_IN_FORCE_FOK = "FOK";
 	final String TIME_IN_FORCE_GTC = "GTC";
@@ -80,17 +80,20 @@ public class BinanceApi {
 
 
 	public Wallet getWallet() {
-		Wallet wallet = null;
+		Wallet wallet = new Wallet();
 
 		try {
-			URL url = new URL(API_URL + ACCOUNT);
+			String parameters = "timestamp=" + System.currentTimeMillis();
+			// Generate signature
+			String signature = generateSignature(parameters);
+						
+			URL url = new URL(API_URL + ACCOUNT + "?" + parameters + "&signature=" + signature);
 			URLConnection uc;
 			uc = getConnection(url);
 
 			InputStreamReader inputStreamReader = new InputStreamReader(uc.getInputStream());
 			BufferedReader br = new BufferedReader(inputStreamReader);
 			String line;
-			System.out.println("Testing connection");
 			while ((line = br.readLine()) != null) {
 				JSONObject json = (JSONObject) new JSONParser().parse(line);
 				wallet = new Wallet(json);
@@ -100,6 +103,10 @@ public class BinanceApi {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
+			e.printStackTrace();
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
 

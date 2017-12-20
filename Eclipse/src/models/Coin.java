@@ -19,6 +19,7 @@ public class Coin {
 	float quantityFree;
 	float quantityLocked;
 	String name;
+	String trend3m;
 
 
 	public Coin() {
@@ -28,6 +29,7 @@ public class Coin {
 	
 	public Coin(JSONObject data) {
 		priceHistory = new ArrayList<CoinPriceInformation>();
+		
 		price = -1;
 		quantityFree = Float.parseFloat((String) data.get("free"));
 		quantityLocked = Float.parseFloat((String) data.get("locked"));
@@ -50,12 +52,30 @@ public class Coin {
 
 
 	public void updateOneMinuteCandle(CoinCandles candle) {
-		if (priceHistory.size() >= 50) {
-			priceHistory.remove(0);
-		}
-
 		candlesPerOneMinute = candle;
 		price = candlesPerOneMinute.getCandles().get(candlesPerOneMinute.getCandles().size() - 1).getClosePrice();
+		
+		updateTrend3m();
+	}
+	
+	
+	private void updateTrend3m() {
+		String candleResult1 = candlesPerOneMinute.getCandles().get(candlesPerOneMinute.getCandles().size() - 1).getTickResult();
+		String candleResult2 = candlesPerOneMinute.getCandles().get(candlesPerOneMinute.getCandles().size() - 2).getTickResult();
+		String candleResult3 = candlesPerOneMinute.getCandles().get(candlesPerOneMinute.getCandles().size() - 3).getTickResult();
+		float candleClose1 = candlesPerOneMinute.getCandles().get(candlesPerOneMinute.getCandles().size() - 1).getClosePrice();
+		float candleClose2 = candlesPerOneMinute.getCandles().get(candlesPerOneMinute.getCandles().size() - 2).getClosePrice();
+		float candleClose3 = candlesPerOneMinute.getCandles().get(candlesPerOneMinute.getCandles().size() - 3).getClosePrice();
+		
+		if (candleResult1.equals("Asc") && candleClose1 > candleClose2) {
+			if (candleResult2.equals("Asc") && candleClose2 > candleClose3) {
+				if (!candleResult3.equals("Asc")) {
+					trend3m = "Rising 2/3";
+				} else {
+					trend3m = "Rising 3/3";
+				}
+			}
+		}
 	}
 
 

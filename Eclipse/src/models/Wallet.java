@@ -1,6 +1,7 @@
 package models;
 
 import java.util.HashMap;
+import monitors.CoinMonitor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -24,11 +25,16 @@ public class Wallet {
 
 	
 	public Wallet(JSONObject json) {
+		currencies = new HashMap<String, Coin>();
+		
 		JSONArray coins = (JSONArray) json.get("balances");
 		for(int i = 0; i < coins.size(); i++) {
 			JSONObject coinData = (JSONObject) coins.get(i);
 			Coin tmp = new Coin(coinData);
-			currencies.put(tmp.getName(), tmp);
+			if (tmp.getQuantityFree() + tmp.getQuantityLocked() > 0) {
+				currencies.put(tmp.getName(), tmp);
+				System.out.println(tmp.getName() + ": " + (tmp.getQuantityFree() + tmp.getQuantityLocked()));
+			}
 		}
 	}
 

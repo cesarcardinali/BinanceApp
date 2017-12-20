@@ -1,9 +1,12 @@
 package models;
 
 import java.util.ArrayList;
-import actuators.TrailingOrder;
+import monitors.CoinMonitor;
+import supportive.AccountStorage;
 import supportive.BinanceApi;
+import supportive.AccountStorage.SavedAccount;
 import ui.MainWindow;
+import actuators.TrailingOrder;
 
 
 public class AppData {
@@ -11,8 +14,10 @@ public class AppData {
 	Wallet wallet;
 	BinanceApi binance;
 	MainWindow ui;
+	AccountStorage accs;
 	
 	ArrayList<TrailingOrder> activeTrailings;
+	ArrayList<CoinMonitor> coinMonitors;
 
 
 	public AppData(MainWindow mainWindow) {
@@ -20,6 +25,8 @@ public class AppData {
 		wallet = new Wallet();
 		
 		activeTrailings = new ArrayList<>();
+		coinMonitors = new ArrayList<>();
+		accs = new AccountStorage();
 	}
 
 
@@ -27,7 +34,8 @@ public class AppData {
 	public boolean logIn(String apiKey, String apiSecret) {
 		binance = new BinanceApi(apiKey, apiSecret);
 		if (binance.isConnectionGood()) {
-			wallet = new Wallet();
+			//wallet = new Wallet();
+			wallet = binance.getWallet();
 			
 			ui.goToMainScreen();
 			ui.revalidate();
@@ -42,8 +50,37 @@ public class AppData {
 		return false;
 	}
 	
+	public boolean logIn(String account) {
+		SavedAccount acc = accs.getAcc(account);
+		binance = new BinanceApi(acc.getKey(), acc.getSecret());
+		if (binance.isConnectionGood()) {
+			// Create wallet based on your Binance Acc
+			wallet = binance.getWallet();
+			
+			// Start monitors for the coins in your wallet
+			for (String c : wallet.getCurrencies().keySet()) {
+				CoinMonitor m = new CoinMonitor(this, c);
+			}
+			
+			ui.goToMainScreen();
+			ui.revalidate();
+			
+			System.out.println("loggedin");
+			
+			return true;
+		} else {
+			System.out.println("log in FAILED!");
+		}
+		
+		return true;
+	}
+	
 	public void addTrailing(TrailingOrder t) {
 		activeTrailings.add(t);
+	}
+	
+	public void addMonitor(CoinMonitor m) {
+		coinMonitors.add(m);
 	}
 	
 	public void stopAllTrailings() {
@@ -52,6 +89,36 @@ public class AppData {
 			activeTrailings.remove(t);
 		}
 		
+	}
+	
+	public void stopAllMonitors() {
+		for (CoinMonitor m : coinMonitors) {
+			m.stop();
+			coinMonitors.remove(m);
+		}
+		
+	}
+	
+	public boolean hasMonitor(String symbol) {
+		for (CoinMonitor m : coinMonitors) {
+			if (m.getMonitoredCoin().equals(symbol) && m.isRunning()) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean hasAccount(String acc) {
+		if(accs.getAcc(acc) != null) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public void addAccount(String acc, String k, String sec) {
+		accs.addAcc(acc, k, sec);
 	}
 	// -----------------------------------------------------------------------------------------------------------------------------
 
@@ -80,6 +147,41 @@ public class AppData {
 
 	public void setWallet(Wallet appData) {
 		this.wallet = appData;
+	}
+
+
+	
+	public AccountStorage getAccs() {
+		return accs;
+	}
+
+	
+	public void setAccs(AccountStorage accs) {
+		this.accs = accs;
+	}
+
+
+	
+	public ArrayList<TrailingOrder> getActiveTrailings() {
+		return activeTrailings;
+	}
+
+
+	
+	public void setActiveTrailings(ArrayList<TrailingOrder> activeTrailings) {
+		this.activeTrailings = activeTrailings;
+	}
+
+
+	
+	public ArrayList<CoinMonitor> getCoinMonitors() {
+		return coinMonitors;
+	}
+
+
+	
+	public void setCoinMonitors(ArrayList<CoinMonitor> coinMonitors) {
+		this.coinMonitors = coinMonitors;
 	}
 	// -----------------------------------------------------------------------------------------------------------------------------
 }

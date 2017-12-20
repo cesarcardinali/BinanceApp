@@ -10,19 +10,15 @@ import supportive.BinanceApi;
 
 
 // Monitora subidas e descidas de preco de uma moeda
-public class CoinMonitor implements Runnable {
+public class CoinMonitor extends Thread implements Runnable {
 
 	AppData appData;
 	BinanceApi binance;
 	Wallet wallet;
 	Coin coin;
-	
+
 	String monitoredCoin;
 	boolean running = false;
-
-
-	public CoinMonitor(AppData data) {
-	}
 
 
 	public CoinMonitor(AppData data, String coinSymbol) {
@@ -40,17 +36,17 @@ public class CoinMonitor implements Runnable {
 		} else {
 			coin = new Coin();
 		}*/
-		
+
 		coin = new Coin();
 		wallet.getCurrencies().put(monitoredCoin, coin);
-	
+
 		while (running) {
 			try {
 				coin.updatePrices(binance.getPriceUpdate(monitoredCoin));
 				coin.updateOneMinuteCandle(binance.getCoinCandle(monitoredCoin, "1m", "120"));
 				//System.out.println("Prices updated!");
-				
-				
+
+
 			} catch (MalformedURLException e1) {
 				e1.printStackTrace();
 			} catch (IOException e1) {
@@ -58,13 +54,20 @@ public class CoinMonitor implements Runnable {
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
-			
-			
+
+
 			try {
 				Thread.sleep(1500);
 			} catch (InterruptedException e) {
 			}
 		}
+		
+		System.out.println(monitoredCoin + " monitor stopped");
+	}
+	
+	
+	public void stopMonitor() {
+		running = false;
 	}
 
 
@@ -73,4 +76,30 @@ public class CoinMonitor implements Runnable {
 		monitor();
 	}
 
+
+	
+	public String getMonitoredCoin() {
+		return monitoredCoin;
+	}
+
+
+	
+	public void setMonitoredCoin(String monitoredCoin) {
+		this.monitoredCoin = monitoredCoin;
+	}
+
+
+	
+	public boolean isRunning() {
+		return running;
+	}
+
+
+	
+	public void setRunning(boolean running) {
+		this.running = running;
+	}
+
+	
+	
 }

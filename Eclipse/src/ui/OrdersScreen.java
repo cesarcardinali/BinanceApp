@@ -420,13 +420,6 @@ public class OrdersScreen extends JPanel {
 				String drop = txtTrailingDropLimit.getText();
 				
 				// TODO remove it (teste)
-				Thread iotaMonitor = new Thread(new CoinMonitor(appData, coin));
-				iotaMonitor.start();
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
 				TrailingOrder iotaTrail = new TrailingOrder(appData, coin, start, drop, quantity);
 				Thread iotaTrailing = new Thread(new TrailingOrder(appData, coin, start, drop, quantity));
 				iotaTrailing.start();

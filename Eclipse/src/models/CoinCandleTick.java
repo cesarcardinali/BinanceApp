@@ -8,7 +8,6 @@ public class CoinCandleTick {
 	/*
 	 * [ 1499040000000, // Open time "0.01634790", // Open "0.80000000", // High "0.01575800", // Low "0.01577100", // Close "148976.11427815", // Volume 1499644799999, // Close time "2434.19055334", // Quote asset volume 308, // Number of trades "1756.87402397", // Taker buy base asset volume "28.46694368", // Taker buy quote asset volume "17928899.62484339" // Can be ignored ]
 	 */
-
 	long openTime;
 	float openPrice;
 	float highPrice;
@@ -19,6 +18,7 @@ public class CoinCandleTick {
 	long trades;
 	float takerBaseVolume;
 	float takerQuoteVolume;
+	String tickResult;
 
 
 	public CoinCandleTick() {
@@ -36,6 +36,13 @@ public class CoinCandleTick {
 		trades = (long) data.get(8);
 		takerBaseVolume = Float.parseFloat((String) data.get(9));
 		takerQuoteVolume = Float.parseFloat((String) data.get(10));
+		if(openPrice < closePrice) {
+			tickResult = "Asc";
+		} else if(openPrice > closePrice) {
+			tickResult = "Desc";
+		} else {
+			tickResult = "Neutral";
+		}
 	}
 
 
@@ -138,5 +145,16 @@ public class CoinCandleTick {
 		this.takerQuoteVolume = takerQuoteVolume;
 	}
 
+	
+	public String getTickResult() {
+		return tickResult;
+	}
 
+
+	
+	public void setTickResult(String result) {
+		this.tickResult = result;
+	}
+
+	
 }
