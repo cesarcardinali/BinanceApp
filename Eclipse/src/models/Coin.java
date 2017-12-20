@@ -89,6 +89,16 @@ public class Coin {
 	}
 
 
+	public float getLastOpenPrice() {
+		float price = -1;
+		if(candlesPerOneMinute != null) {
+			price = candlesPerOneMinute.getCandles().get(candlesPerOneMinute.getCandles().size() - 2).getOpenPrice();
+		}
+
+		return price;
+	}
+
+
 	public float getActualClosePrice() {
 		price = -1;
 		if(candlesPerOneMinute != null) {

@@ -24,6 +24,7 @@ public class SmallTrade implements Runnable {
 	float total;
 	float initialMoney;
 	float initialTransactionMoney;
+	float bitcoinPrice = 17000;
 
 	float actualPrice;
 	float lastPrice;
@@ -42,7 +43,6 @@ public class SmallTrade implements Runnable {
 		dropLimit.replace("%", "");
 		stopPrice = 0;
 		this.dropLimit = Float.parseFloat(dropLimit);
-		float bitcoinPrice = 17000;
 		if (quantity.contains("m")){
 			this.quantity = Float.parseFloat("0");
 			this.startMoney = Float.parseFloat(quantity.replace("m", ""))/bitcoinPrice;
@@ -79,7 +79,7 @@ public class SmallTrade implements Runnable {
 			}
 			if (actualPrice <= startPrice){
 				startPrice = actualPrice;
-			} else if (actualPrice >= startPrice*1.015){
+			} else if (coin.getLastClosePrice() >= coin.getLastOpenPrice()*1.01){
 				//Buy
 				buyPrice = actualPrice;
 				if (total == 0){
@@ -90,7 +90,6 @@ public class SmallTrade implements Runnable {
 						total = (float) (startMoney*0.999);
 						initialMoney = startMoney;
 					}
-					appData.totalMoneyStart += initialMoney;
 				}
 				quantity = total/buyPrice;
 				initialTransactionMoney = total;
@@ -116,7 +115,7 @@ public class SmallTrade implements Runnable {
 							System.out.println("### " + symbol + " ###");
 							System.out.println("Coin dropped BELOW buy price. Sold at " + df.format(actualPrice));
 							total = (float) ((quantity * actualPrice)*0.999);
-							System.out.println("LOST: " + pf.format((1-(total/initialTransactionMoney))*100) + "%");
+							System.out.println("LOSS: " + pf.format(((total/initialTransactionMoney)-1)*100) + "%");
 							System.out.println("Initial: " + initialMoney + "\tInitialTransaction: " + initialTransactionMoney + "\tTotal: " + total);
 							System.out.println("");
 							startPrice = actualPrice;
@@ -127,7 +126,11 @@ public class SmallTrade implements Runnable {
 							System.out.println("Buy Price: " + df.format(buyPrice));
 							System.out.println("Sell Price: " + df.format(actualPrice));
 							total = (float) ((quantity * actualPrice)*0.999);
-							System.out.println("Profit (after binance taxes): " + pf.format((1-(total/initialTransactionMoney))*100) + "%");
+							if (actualPrice < buyPrice){
+								System.out.println("LOSS (after binance taxes): " + pf.format(((total/initialTransactionMoney)-1)*100) + "%");
+							}else{
+								System.out.println("Profit (after binance taxes): " + pf.format(((total/initialTransactionMoney)-1)*100) + "%");
+							}
 							System.out.println("Initial: " + initialMoney + "\tInitialTransaction: " + initialTransactionMoney + "\tTotal: " + total);
 							System.out.println("");
 							startPrice = actualPrice;
@@ -139,11 +142,12 @@ public class SmallTrade implements Runnable {
 				}
 			}
 		}
-		appData.totalMoneyCurrent += total;
-		System.out.println("\n\n\n=========================");
+		appData.totalMoneyCurrent += total*bitcoinPrice;
+		appData.totalMoneyStart += initialMoney*bitcoinPrice;
+		System.out.println("=========================");
 		System.out.println("Start Money: " + appData.totalMoneyStart);
 		System.out.println("End Money: " + appData.totalMoneyCurrent);
-		System.out.println("\n\n\n=========================");
+		System.out.println("=========================\n\n\n");
 	}
 	
 	public void cancel(){
