@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import models.AppData;
 import models.Coin;
 import models.Wallet;
-import monitors.CoinMonitor;
 import supportive.BinanceApi;
 
 
@@ -66,12 +65,11 @@ public class TrailingOrder implements Runnable {
 		DecimalFormat df = new DecimalFormat("#.########");
 		startTime = System.currentTimeMillis();
 
-		/*if (!appData.hasMonitor(symbol)) {
-			CoinMonitor mon = new CoinMonitor(appData, symbol);
-			Thread monitor = new Thread(mon);
-			monitor.start();
-			appData.addMonitor(mon);
-		}*/
+		if (!appData.hasMonitor(symbol)) {
+			Coin c = new Coin();
+			c.setName(symbol);
+			appData.getWallet().getCurrencies().put(symbol, new Coin());
+		}
 
 		while (done != true) {
 			if (wallet.getCurrencies() != null && wallet.getCurrencies().containsKey(symbol)) {

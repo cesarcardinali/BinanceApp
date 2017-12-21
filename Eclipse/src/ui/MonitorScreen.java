@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -15,6 +16,7 @@ import javax.swing.JPanel;
 import models.AppData;
 import models.Coin;
 import ui.custom_items.MonitorLabel;
+import ui.custom_items.TrendPanel;
 
 
 public class MonitorScreen extends JFrame {
@@ -33,10 +35,12 @@ public class MonitorScreen extends JFrame {
 	private JPanel panelPrice;
 	private JPanel panelAvg3;
 	private JPanel panelAvg8;
+	private JPanel panel24hHighest;
 
 	private Thread uiThread;
 	private boolean active = false;
 	private JPanel panel_1;
+	private JLabel label;
 
 
 	public MonitorScreen(AppData data) {
@@ -48,9 +52,9 @@ public class MonitorScreen extends JFrame {
 		panel = new JPanel();
 		getContentPane().add(panel, BorderLayout.CENTER);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0 };
+		gbl_panel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0 };
 		gbl_panel.rowHeights = new int[] { 0, 0, 0 };
-		gbl_panel.columnWeights = new double[] { 1.0, 1.0, 1.0, 1.0, 1.0, Double.MIN_VALUE };
+		gbl_panel.columnWeights = new double[] { 1.0, 2.0, 2.0, 2.0, 2.0, 2.0, Double.MIN_VALUE };
 		gbl_panel.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
@@ -78,7 +82,7 @@ public class MonitorScreen extends JFrame {
 		gbc_lblPrice.gridy = 0;
 		panel.add(lblPrice, gbc_lblPrice);
 
-		lblAvg = new JLabel("Avg(3m)");
+		lblAvg = new JLabel("Avg(5m)");
 		lblAvg.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblAvg = new GridBagConstraints();
 		gbc_lblAvg.insets = new Insets(0, 0, 5, 5);
@@ -86,13 +90,21 @@ public class MonitorScreen extends JFrame {
 		gbc_lblAvg.gridy = 0;
 		panel.add(lblAvg, gbc_lblAvg);
 
-		lblAvg_1 = new JLabel("Avg(8m)");
+		lblAvg_1 = new JLabel("Avg(30m)");
 		lblAvg_1.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblAvg_1 = new GridBagConstraints();
-		gbc_lblAvg_1.insets = new Insets(0, 0, 5, 0);
+		gbc_lblAvg_1.insets = new Insets(0, 0, 5, 5);
 		gbc_lblAvg_1.gridx = 4;
 		gbc_lblAvg_1.gridy = 0;
 		panel.add(lblAvg_1, gbc_lblAvg_1);
+		
+		label = new JLabel("24h Highest");
+		label.setFont(new Font("Tahoma", Font.BOLD, 12));
+		GridBagConstraints gbc_label = new GridBagConstraints();
+		gbc_label.insets = new Insets(0, 0, 5, 0);
+		gbc_label.gridx = 5;
+		gbc_label.gridy = 0;
+		panel.add(label, gbc_label);
 
 		panelCoins = new JPanel();
 		GridBagConstraints gbc_panelCoins = new GridBagConstraints();
@@ -132,11 +144,21 @@ public class MonitorScreen extends JFrame {
 
 		panelAvg8 = new JPanel();
 		GridBagConstraints gbc_panelAvg8 = new GridBagConstraints();
+		gbc_panelAvg8.insets = new Insets(0, 0, 0, 5);
 		gbc_panelAvg8.fill = GridBagConstraints.BOTH;
 		gbc_panelAvg8.gridx = 4;
 		gbc_panelAvg8.gridy = 1;
 		panel.add(panelAvg8, gbc_panelAvg8);
 		panelAvg8.setLayout(new BoxLayout(panelAvg8, BoxLayout.Y_AXIS));
+		
+		panel24hHighest = new JPanel();
+		GridBagConstraints gbc_panel1 = new GridBagConstraints();
+		gbc_panel1.insets = new Insets(0, 0, 0, 5);
+		gbc_panel1.fill = GridBagConstraints.BOTH;
+		gbc_panel1.gridx = 5;
+		gbc_panel1.gridy = 1;
+		panel.add(panel24hHighest, gbc_panel1);
+		panel24hHighest.setLayout(new BoxLayout(panel24hHighest, BoxLayout.Y_AXIS));
 
 		startUiThread();
 	}
@@ -157,12 +179,37 @@ public class MonitorScreen extends JFrame {
 					panelAvg3.removeAll();
 					panelAvg8.removeAll();
 					panelTrend.removeAll();
+					panel24hHighest.removeAll();
 					
 					for (String c: currencies.keySet()){
 						panelCoins.add(new MonitorLabel(c));
 						Coin temp = currencies.get(c);
 						panelPrice.add(new MonitorLabel("" + df.format(temp.getPrice())));
-						panelTrend.add(new MonitorLabel(temp.getTrend3m()));
+						
+						if (temp.getLast6CandlesResolution() != null) {
+							panelTrend.add(new TrendPanel(temp.getLast6CandlesResolution()));
+							
+							MonitorLabel m = new MonitorLabel(df.format(temp.getAveragePriceInLastXMinutes(5)));
+							if(temp.getPrice() < temp.getAveragePriceInLastXMinutes(5))
+								m.setColor(new Color(10, 160, 10));
+							else
+								m.setColor(new Color(180, 10, 10));
+							panelAvg3.add(m);
+							
+							m = new MonitorLabel(df.format(temp.getAveragePriceInLastXMinutes(30)));
+							if(temp.getPrice() < temp.getAveragePriceInLastXMinutes(30))
+								m.setColor(new Color(10, 160, 10));
+							else
+								m.setColor(new Color(180, 10, 10));
+							panelAvg8.add(m);
+							
+							m = new MonitorLabel(df.format(temp.getHighest24hPrice()));
+							if(temp.getPrice() < temp.getHighest24hPrice())
+								m.setColor(new Color(10, 160, 10));
+							else
+								m.setColor(new Color(180, 10, 10));
+							panel24hHighest.add(m);
+						}
 					}
 					
 					repaint();
@@ -179,6 +226,8 @@ public class MonitorScreen extends JFrame {
 
 		uiThread.start();
 	}
+	
+	
 	public Rectangle getPanel_1Bounds() {
 		return panel_1.getBounds();
 	}

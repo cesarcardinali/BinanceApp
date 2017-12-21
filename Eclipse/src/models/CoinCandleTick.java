@@ -37,11 +37,11 @@ public class CoinCandleTick {
 		takerBaseVolume = Float.parseFloat((String) data.get(9));
 		takerQuoteVolume = Float.parseFloat((String) data.get(10));
 		if(openPrice < closePrice) {
-			tickResult = "Asc";
+			tickResult = "G";
 		} else if(openPrice > closePrice) {
-			tickResult = "Desc";
+			tickResult = "R";
 		} else {
-			tickResult = "Neutral";
+			tickResult = "N";
 		}
 	}
 
