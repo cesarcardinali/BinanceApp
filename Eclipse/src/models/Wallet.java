@@ -1,5 +1,6 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -34,7 +35,11 @@ public class Wallet {
 				currencies.put(tmp.getName(), tmp);
 				System.out.println(tmp.getName() + ": " + (tmp.getQuantityFree() + tmp.getQuantityLocked()));
 			}
-		}
+		}		
+		currencies.put("BNBBTC", new Coin());
+		currencies.put("ETHBTC", new Coin());
+		currencies.put("BCCBTC", new Coin());
+		currencies.put("LTCBTC", new Coin());
 	}
 
 	public HashMap<String, Coin> getCurrencies() {

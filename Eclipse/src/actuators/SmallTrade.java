@@ -14,6 +14,7 @@ public class SmallTrade implements Runnable {
 	BinanceApi binance;
 	String symbol;
 	float startPrice;
+	float closePrice;
 	float dropLimit;
 	float quantity;
 	float startMoney;
@@ -60,6 +61,7 @@ public class SmallTrade implements Runnable {
 		
 		DecimalFormat df = new DecimalFormat("#.########");
 		DecimalFormat pf = new DecimalFormat("###.##");
+		float newDropLimit;
 		
 		try {
 			Thread.sleep(2000);
@@ -67,7 +69,8 @@ public class SmallTrade implements Runnable {
 		}
 		
 		if(coin != null){
-			startPrice = coin.getActualClosePrice();
+			startPrice = coin.getLastOpenPrice();
+			closePrice = coin.getLastClosePrice();
 		}else{
 			System.out.println("!!!!!! - " + symbol);
 		}
@@ -77,10 +80,14 @@ public class SmallTrade implements Runnable {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 			}
-			if (actualPrice <= startPrice){
-				startPrice = actualPrice;
-			} else if (coin.getLastClosePrice() >= coin.getLastOpenPrice()*1.01){
+			if (coin.getLastOpenPrice() <= startPrice){
+				startPrice = coin.getLastOpenPrice();
+			} else if (coin.getLastClosePrice() <= closePrice){
+				closePrice = coin.getLastClosePrice();
+			}
+			if (actualPrice >= startPrice*1.02 || actualPrice >= closePrice*1.02){
 				//Buy
+				newDropLimit = dropLimit;
 				buyPrice = actualPrice;
 				if (total == 0){
 					if(startMoney == 0){
@@ -103,12 +110,18 @@ public class SmallTrade implements Runnable {
 					actualPrice = coin.getActualClosePrice();
 					if (actualPrice > maxPrice){
 						maxPrice = actualPrice;
+						if (maxPrice >= buyPrice*1.01 && newDropLimit == dropLimit){
+							newDropLimit = newDropLimit/2;
+							System.out.println("### " + symbol + " ###");
+							System.out.println("Being Safe -> Decrease Drop Limit: " + dropLimit + " -> " + newDropLimit);
+							System.out.println("");
+						}
 					}
 					try {
 						Thread.sleep(5000);
 					} catch (InterruptedException e) {
 					}
-					if ((actualPrice <= buyPrice*(1-0.02) || actualPrice <= maxPrice*(1-dropLimit)) && !alert){
+					if ((actualPrice <= buyPrice*(1-0.02) || actualPrice <= maxPrice*(1-newDropLimit)) && !alert){
 						alert = true;
 					} else if (alert){
 						if (actualPrice <= buyPrice*(1-0.02)){
@@ -118,9 +131,10 @@ public class SmallTrade implements Runnable {
 							System.out.println("LOSS: " + pf.format(((total/initialTransactionMoney)-1)*100) + "%");
 							System.out.println("Initial: " + initialMoney + "\tInitialTransaction: " + initialTransactionMoney + "\tTotal: " + total);
 							System.out.println("");
-							startPrice = actualPrice;
+							startPrice = coin.getLastOpenPrice();
+							closePrice = coin.getLastClosePrice();
 							break;
-						}else if (actualPrice <= maxPrice*(1-dropLimit)){
+						}else if (actualPrice <= maxPrice*(1-newDropLimit)){
 							System.out.println("### " + symbol + " ###");
 							System.out.println("Coin dropped below drop limit. Sold at " + df.format(actualPrice));
 							System.out.println("Buy Price: " + df.format(buyPrice));
@@ -133,7 +147,8 @@ public class SmallTrade implements Runnable {
 							}
 							System.out.println("Initial: " + initialMoney + "\tInitialTransaction: " + initialTransactionMoney + "\tTotal: " + total);
 							System.out.println("");
-							startPrice = actualPrice;
+							startPrice = coin.getLastOpenPrice();
+							closePrice = coin.getLastClosePrice();
 							break;
 						}else{
 							alert = false;
@@ -145,6 +160,7 @@ public class SmallTrade implements Runnable {
 		appData.totalMoneyCurrent += total*bitcoinPrice;
 		appData.totalMoneyStart += initialMoney*bitcoinPrice;
 		System.out.println("=========================");
+		System.out.println("### " + symbol + " ###");
 		System.out.println("Start Money: " + appData.totalMoneyStart);
 		System.out.println("End Money: " + appData.totalMoneyCurrent);
 		System.out.println("=========================\n\n\n");

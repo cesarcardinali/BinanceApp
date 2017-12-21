@@ -477,11 +477,6 @@ public class OrdersScreen extends JPanel {
 				coins.add("LTCBTC");
 				for (String coin : coins) {
 
-					CoinMonitor cm = new CoinMonitor(appData, coin);
-					Thread tMonitor = new Thread(cm);
-					tMonitor.start();
-					coinMonitor.add(cm);
-
 					SmallTrade st = new SmallTrade(appData, coin, drop, quantity);
 					Thread auxTrailing = new Thread(st);
 					auxTrailing.start();
