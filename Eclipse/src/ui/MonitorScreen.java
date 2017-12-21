@@ -5,15 +5,16 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import ui.custom_items.MonitorLabel;
 import models.AppData;
 import models.Coin;
+import ui.custom_items.MonitorLabel;
 
 
 public class MonitorScreen extends JFrame {
@@ -35,6 +36,7 @@ public class MonitorScreen extends JFrame {
 
 	private Thread uiThread;
 	private boolean active = false;
+	private JPanel panel_1;
 
 
 	public MonitorScreen(AppData data) {
@@ -109,7 +111,7 @@ public class MonitorScreen extends JFrame {
 		gbc_panelTrend.gridy = 1;
 		panel.add(panelTrend, gbc_panelTrend);
 		panelTrend.setLayout(new BoxLayout(panelTrend, BoxLayout.Y_AXIS));
-
+		
 		panelPrice = new JPanel();
 		GridBagConstraints gbc_panelPrice = new GridBagConstraints();
 		gbc_panelPrice.insets = new Insets(0, 0, 0, 5);
@@ -176,5 +178,11 @@ public class MonitorScreen extends JFrame {
 		});
 
 		uiThread.start();
+	}
+	public Rectangle getPanel_1Bounds() {
+		return panel_1.getBounds();
+	}
+	public void setPanel_1Bounds(Rectangle bounds) {
+		panel_1.setBounds(bounds);
 	}
 }
