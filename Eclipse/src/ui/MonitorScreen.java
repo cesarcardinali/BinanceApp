@@ -32,6 +32,7 @@ public class MonitorScreen extends JFrame {
 	private JLabel lblAvg_1;
 	private JPanel panelCoins;
 	private JPanel panelTrend;
+	private JPanel panelTrades;
 	private JPanel panelPrice;
 	private JPanel panelAvg3;
 	private JPanel panelAvg8;
@@ -41,6 +42,7 @@ public class MonitorScreen extends JFrame {
 	private boolean active = false;
 	private JPanel panel_1;
 	private JLabel label;
+	private JLabel label_1;
 
 
 	public MonitorScreen(AppData data) {
@@ -52,9 +54,9 @@ public class MonitorScreen extends JFrame {
 		panel = new JPanel();
 		getContentPane().add(panel, BorderLayout.CENTER);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0 };
+		gbl_panel.columnWidths = new int[] { 0, 0, 70, 0, 0, 0, 0, 0 };
 		gbl_panel.rowHeights = new int[] { 0, 0, 0 };
-		gbl_panel.columnWeights = new double[] { 1.0, 2.0, 2.0, 2.0, 2.0, 2.0, Double.MIN_VALUE };
+		gbl_panel.columnWeights = new double[] { 1.0, 2.0, 0.0, 2.0, 2.0, 2.0, 2.0, Double.MIN_VALUE };
 		gbl_panel.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
@@ -73,12 +75,20 @@ public class MonitorScreen extends JFrame {
 		gbc_lblTrend.gridx = 1;
 		gbc_lblTrend.gridy = 0;
 		panel.add(lblTrend, gbc_lblTrend);
+		
+		label_1 = new JLabel("Trades/min");
+		label_1.setFont(new Font("Tahoma", Font.BOLD, 12));
+		GridBagConstraints gbc_label_1 = new GridBagConstraints();
+		gbc_label_1.insets = new Insets(0, 0, 5, 5);
+		gbc_label_1.gridx = 2;
+		gbc_label_1.gridy = 0;
+		panel.add(label_1, gbc_label_1);
 
 		lblPrice = new JLabel("Price");
 		lblPrice.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblPrice = new GridBagConstraints();
 		gbc_lblPrice.insets = new Insets(0, 0, 5, 5);
-		gbc_lblPrice.gridx = 2;
+		gbc_lblPrice.gridx = 3;
 		gbc_lblPrice.gridy = 0;
 		panel.add(lblPrice, gbc_lblPrice);
 
@@ -86,7 +96,7 @@ public class MonitorScreen extends JFrame {
 		lblAvg.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblAvg = new GridBagConstraints();
 		gbc_lblAvg.insets = new Insets(0, 0, 5, 5);
-		gbc_lblAvg.gridx = 3;
+		gbc_lblAvg.gridx = 4;
 		gbc_lblAvg.gridy = 0;
 		panel.add(lblAvg, gbc_lblAvg);
 
@@ -94,7 +104,7 @@ public class MonitorScreen extends JFrame {
 		lblAvg_1.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblAvg_1 = new GridBagConstraints();
 		gbc_lblAvg_1.insets = new Insets(0, 0, 5, 5);
-		gbc_lblAvg_1.gridx = 4;
+		gbc_lblAvg_1.gridx = 5;
 		gbc_lblAvg_1.gridy = 0;
 		panel.add(lblAvg_1, gbc_lblAvg_1);
 		
@@ -102,7 +112,7 @@ public class MonitorScreen extends JFrame {
 		label.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_label = new GridBagConstraints();
 		gbc_label.insets = new Insets(0, 0, 5, 0);
-		gbc_label.gridx = 5;
+		gbc_label.gridx = 6;
 		gbc_label.gridy = 0;
 		panel.add(label, gbc_label);
 
@@ -124,11 +134,20 @@ public class MonitorScreen extends JFrame {
 		panel.add(panelTrend, gbc_panelTrend);
 		panelTrend.setLayout(new BoxLayout(panelTrend, BoxLayout.Y_AXIS));
 		
+		panelTrades = new JPanel();
+		GridBagConstraints gbc_panelT = new GridBagConstraints();
+		gbc_panelT.insets = new Insets(0, 0, 0, 5);
+		gbc_panelT.fill = GridBagConstraints.BOTH;
+		gbc_panelT.gridx = 2;
+		gbc_panelT.gridy = 1;
+		panel.add(panelTrades, gbc_panelT);
+		panelTrades.setLayout(new BoxLayout(panelTrades, BoxLayout.Y_AXIS));
+		
 		panelPrice = new JPanel();
 		GridBagConstraints gbc_panelPrice = new GridBagConstraints();
 		gbc_panelPrice.insets = new Insets(0, 0, 0, 5);
 		gbc_panelPrice.fill = GridBagConstraints.BOTH;
-		gbc_panelPrice.gridx = 2;
+		gbc_panelPrice.gridx = 3;
 		gbc_panelPrice.gridy = 1;
 		panel.add(panelPrice, gbc_panelPrice);
 		panelPrice.setLayout(new BoxLayout(panelPrice, BoxLayout.Y_AXIS));
@@ -137,7 +156,7 @@ public class MonitorScreen extends JFrame {
 		GridBagConstraints gbc_panelAvg3 = new GridBagConstraints();
 		gbc_panelAvg3.insets = new Insets(0, 0, 0, 5);
 		gbc_panelAvg3.fill = GridBagConstraints.BOTH;
-		gbc_panelAvg3.gridx = 3;
+		gbc_panelAvg3.gridx = 4;
 		gbc_panelAvg3.gridy = 1;
 		panel.add(panelAvg3, gbc_panelAvg3);
 		panelAvg3.setLayout(new BoxLayout(panelAvg3, BoxLayout.Y_AXIS));
@@ -146,16 +165,15 @@ public class MonitorScreen extends JFrame {
 		GridBagConstraints gbc_panelAvg8 = new GridBagConstraints();
 		gbc_panelAvg8.insets = new Insets(0, 0, 0, 5);
 		gbc_panelAvg8.fill = GridBagConstraints.BOTH;
-		gbc_panelAvg8.gridx = 4;
+		gbc_panelAvg8.gridx = 5;
 		gbc_panelAvg8.gridy = 1;
 		panel.add(panelAvg8, gbc_panelAvg8);
 		panelAvg8.setLayout(new BoxLayout(panelAvg8, BoxLayout.Y_AXIS));
 		
 		panel24hHighest = new JPanel();
 		GridBagConstraints gbc_panel1 = new GridBagConstraints();
-		gbc_panel1.insets = new Insets(0, 0, 0, 5);
 		gbc_panel1.fill = GridBagConstraints.BOTH;
-		gbc_panel1.gridx = 5;
+		gbc_panel1.gridx = 6;
 		gbc_panel1.gridy = 1;
 		panel.add(panel24hHighest, gbc_panel1);
 		panel24hHighest.setLayout(new BoxLayout(panel24hHighest, BoxLayout.Y_AXIS));
@@ -175,20 +193,20 @@ public class MonitorScreen extends JFrame {
 					currencies = appData.getWallet().getCurrencies();
 
 					panelCoins.removeAll();
+					panelTrend.removeAll();
+					panelTrades.removeAll();
 					panelPrice.removeAll();
 					panelAvg3.removeAll();
 					panelAvg8.removeAll();
-					panelTrend.removeAll();
 					panel24hHighest.removeAll();
 					
-					for (String c: currencies.keySet()){
-						panelCoins.add(new MonitorLabel(c));
+					String curr[] = currencies.keySet().toArray(new String[currencies.keySet().size()]);
+					for (String c: curr){
 						Coin temp = currencies.get(c);
-						panelPrice.add(new MonitorLabel("" + df.format(temp.getPrice())));
 						
+						panelCoins.add(new MonitorLabel(c));
 						if (temp.getLast6CandlesResolution() != null) {
 							panelTrend.add(new TrendPanel(temp.getLast6CandlesResolution()));
-							
 							MonitorLabel m = new MonitorLabel(df.format(temp.getAveragePriceInLastXMinutes(5)));
 							if(temp.getPrice() < temp.getAveragePriceInLastXMinutes(5))
 								m.setColor(new Color(10, 160, 10));
@@ -208,8 +226,13 @@ public class MonitorScreen extends JFrame {
 								m.setColor(new Color(10, 160, 10));
 							else
 								m.setColor(new Color(180, 10, 10));
+							
+							panelTrades.add(new MonitorLabel("" + temp.getLastMinuteTrades()));
+							panelPrice.add(new MonitorLabel("" + df.format(temp.getPrice())));
 							panel24hHighest.add(m);
 						}
+
+						
 					}
 					
 					repaint();

@@ -17,6 +17,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import models.AppData;
 import monitors.CoinMonitor;
+import actuators.ComboTrade;
 import actuators.SmallTrade;
 import actuators.TrailingOrder;
 
@@ -29,18 +30,19 @@ public class OrdersScreen extends JPanel {
 
 	private JTextField txtTrailingBuyValue;
 	private JTextField txtTrailingDropLimit;
-	private JTextField txtStopGainLimit;
-	private JTextField txtStopLowLimit;
-	private JTextField txtStopBuyLimit;
+	private JTextField txtComboSellPrice;
+	private JTextField txtComboBuyLimit;
+	private JTextField txtComboBuyPrice;
 	private JTextField txtCoinName;
 	private JTextField txtCoinAmount;
-	private JButton btnAddStopLimit;
+	private JButton btnAddStopCombo;
 	private JButton btnAddTrailingStop;
 	private JButton btnStop;
 	private JTextField textField;
 	private JTextField textField_1;
 	private JButton btnStopGui;
 	private JButton btnGuiTest;
+	private JTextField txtComboSellLimit;
 
 
 	public OrdersScreen(AppData appData) {
@@ -48,7 +50,7 @@ public class OrdersScreen extends JPanel {
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 200, 0, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 230, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
@@ -205,8 +207,10 @@ public class OrdersScreen extends JPanel {
 		gbc_btnStop.gridy = 2;
 		panel.add(btnStop, gbc_btnStop);
 
-		JLabel label = new JLabel("Stop Limit Ratio");
+		JLabel label = new JLabel("Stop Limit Combo");
 		GridBagConstraints gbc_label = new GridBagConstraints();
+		gbc_label.anchor = GridBagConstraints.WEST;
+		gbc_label.gridwidth = 2;
 		gbc_label.insets = new Insets(0, 0, 5, 5);
 		gbc_label.gridx = 0;
 		gbc_label.gridy = 4;
@@ -220,50 +224,73 @@ public class OrdersScreen extends JPanel {
 		gbc_label_1.gridy = 5;
 		panel.add(label_1, gbc_label_1);
 
-		JLabel label_2 = new JLabel("Drop Limit");
+		JLabel label_2 = new JLabel("Buy Limit");
 		GridBagConstraints gbc_label_2 = new GridBagConstraints();
 		gbc_label_2.insets = new Insets(0, 0, 5, 5);
 		gbc_label_2.gridx = 1;
 		gbc_label_2.gridy = 5;
 		panel.add(label_2, gbc_label_2);
 
-		JLabel label_3 = new JLabel("Gain Limit");
+		JLabel label_3 = new JLabel("Sell Price");
 		GridBagConstraints gbc_label_3 = new GridBagConstraints();
 		gbc_label_3.insets = new Insets(0, 0, 5, 5);
 		gbc_label_3.gridx = 2;
 		gbc_label_3.gridy = 5;
 		panel.add(label_3, gbc_label_3);
+		
+		JLabel label_12 = new JLabel("Sell Limit");
+		GridBagConstraints gbc_label_12 = new GridBagConstraints();
+		gbc_label_12.insets = new Insets(0, 0, 5, 5);
+		gbc_label_12.gridx = 3;
+		gbc_label_12.gridy = 5;
+		panel.add(label_12, gbc_label_12);
 
-		txtStopBuyLimit = new JTextField();
-		GridBagConstraints gbc_txtStopBuyLimit = new GridBagConstraints();
-		gbc_txtStopBuyLimit.insets = new Insets(0, 0, 5, 5);
-		gbc_txtStopBuyLimit.gridx = 0;
-		gbc_txtStopBuyLimit.gridy = 6;
-		panel.add(txtStopBuyLimit, gbc_txtStopBuyLimit);
-		txtStopBuyLimit.setColumns(10);
+		txtComboBuyPrice = new JTextField();
+		GridBagConstraints gbc_txtComboBuyPrice = new GridBagConstraints();
+		gbc_txtComboBuyPrice.insets = new Insets(0, 0, 5, 5);
+		gbc_txtComboBuyPrice.gridx = 0;
+		gbc_txtComboBuyPrice.gridy = 6;
+		panel.add(txtComboBuyPrice, gbc_txtComboBuyPrice);
+		txtComboBuyPrice.setColumns(10);
 
-		txtStopLowLimit = new JTextField();
-		GridBagConstraints gbc_txtStopLowLimit = new GridBagConstraints();
-		gbc_txtStopLowLimit.insets = new Insets(0, 0, 5, 5);
-		gbc_txtStopLowLimit.gridx = 1;
-		gbc_txtStopLowLimit.gridy = 6;
-		panel.add(txtStopLowLimit, gbc_txtStopLowLimit);
-		txtStopLowLimit.setColumns(10);
+		txtComboBuyLimit = new JTextField();
+		GridBagConstraints gbc_txtComboBuyLimit = new GridBagConstraints();
+		gbc_txtComboBuyLimit.insets = new Insets(0, 0, 5, 5);
+		gbc_txtComboBuyLimit.gridx = 1;
+		gbc_txtComboBuyLimit.gridy = 6;
+		panel.add(txtComboBuyLimit, gbc_txtComboBuyLimit);
+		txtComboBuyLimit.setColumns(10);
 
-		txtStopGainLimit = new JTextField();
-		GridBagConstraints gbc_txtStopGainLimit = new GridBagConstraints();
-		gbc_txtStopGainLimit.insets = new Insets(0, 0, 5, 5);
-		gbc_txtStopGainLimit.gridx = 2;
-		gbc_txtStopGainLimit.gridy = 6;
-		panel.add(txtStopGainLimit, gbc_txtStopGainLimit);
-		txtStopGainLimit.setColumns(10);
+		txtComboSellPrice = new JTextField();
+		GridBagConstraints gbc_txtComboSellPrice = new GridBagConstraints();
+		gbc_txtComboSellPrice.insets = new Insets(0, 0, 5, 5);
+		gbc_txtComboSellPrice.gridx = 2;
+		gbc_txtComboSellPrice.gridy = 6;
+		panel.add(txtComboSellPrice, gbc_txtComboSellPrice);
+		txtComboSellPrice.setColumns(10);
+		
+		txtComboSellLimit = new JTextField();
+		txtComboSellLimit.setColumns(10);
+		GridBagConstraints gbc_txtComboSellLimit = new GridBagConstraints();
+		gbc_txtComboSellLimit.insets = new Insets(0, 0, 5, 5);
+		gbc_txtComboSellLimit.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtComboSellLimit.gridx = 3;
+		gbc_txtComboSellLimit.gridy = 6;
+		panel.add(txtComboSellLimit, gbc_txtComboSellLimit);
 
-		btnAddStopLimit = new JButton("Add");
-		GridBagConstraints gbc_btnAddStopLimit = new GridBagConstraints();
-		gbc_btnAddStopLimit.insets = new Insets(0, 0, 5, 5);
-		gbc_btnAddStopLimit.gridx = 4;
-		gbc_btnAddStopLimit.gridy = 6;
-		panel.add(btnAddStopLimit, gbc_btnAddStopLimit);
+		btnAddStopCombo = new JButton("Add");
+		GridBagConstraints gbc_btnAddStopCombo = new GridBagConstraints();
+		gbc_btnAddStopCombo.insets = new Insets(0, 0, 5, 5);
+		gbc_btnAddStopCombo.gridx = 4;
+		gbc_btnAddStopCombo.gridy = 6;
+		panel.add(btnAddStopCombo, gbc_btnAddStopCombo);
+		
+		JButton btnStopStopCombo = new JButton("Stop");
+		GridBagConstraints gbc_btnStopStopCombo = new GridBagConstraints();
+		gbc_btnStopStopCombo.insets = new Insets(0, 0, 5, 0);
+		gbc_btnStopStopCombo.gridx = 5;
+		gbc_btnStopStopCombo.gridy = 6;
+		panel.add(btnStopStopCombo, gbc_btnStopStopCombo);
 
 		btnGuiTest = new JButton("Gui");
 		GridBagConstraints gbc_btnGuiTest = new GridBagConstraints();
@@ -440,19 +467,31 @@ public class OrdersScreen extends JPanel {
 				String drop = txtTrailingDropLimit.getText();
 
 				// TODO remove it (teste)
-				TrailingOrder iotaTrail = new TrailingOrder(appData, coin, start, drop, quantity);
-				Thread iotaTrailing = new Thread(new TrailingOrder(appData, coin, start, drop, quantity));
-				iotaTrailing.start();
+				TrailingOrder trail = new TrailingOrder(appData, coin, start, drop, quantity);
+				Thread trailing = new Thread(trail);
+				trailing.start();
 
-				appData.addTrailing(iotaTrail);
+				appData.addTrailing(trail);
 				// END --------
 			}
 		});
 
-		btnAddStopLimit.addActionListener(new ActionListener() {
-
+		btnAddStopCombo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				String coin = txtCoinName.getText();
+				String quantity = txtCoinAmount.getText();
+				String buy = txtComboBuyPrice.getText();
+				String buyLimit = txtComboBuyLimit.getText();
+				String sell = txtComboSellPrice.getText();
+				String sellLimit = txtComboSellLimit.getText();
+				
+				// TODO remove it (teste)
+				ComboTrade combo = new ComboTrade(appData, coin, quantity, buy, buyLimit, sell, sellLimit);
+				Thread comboThread = new Thread(combo);
+				comboThread.start();
 
+				appData.addComboTrade(combo);
+				// END --------
 			}
 		});
 

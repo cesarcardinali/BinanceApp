@@ -65,24 +65,14 @@ public class TrailingOrder implements Runnable {
 		DecimalFormat df = new DecimalFormat("#.########");
 		startTime = System.currentTimeMillis();
 
-		if (!appData.hasMonitor(symbol)) {
-			Coin c = new Coin();
-			c.setName(symbol);
-			appData.getWallet().getCurrencies().put(symbol, new Coin());
+		if (wallet.getCurrencies() != null && !wallet.getCurrencies().containsKey(symbol)) {
+			wallet.semaphoreAcq();
+			wallet.getCurrencies().put(symbol, new Coin());
+			wallet.semaphoreRel();
 		}
 
 		while (done != true) {
-			if (wallet.getCurrencies() != null && wallet.getCurrencies().containsKey(symbol)) {
-				coin = wallet.getCurrencies().get(symbol);
-			} else {
-				System.out.println("Coin unkown");
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-				}
-				continue;
-			}
-
+			coin = wallet.getCurrencies().get(symbol);
 			lastPrice = coin.getLastClosePrice();
 			actualPrice = coin.getActualClosePrice();
 

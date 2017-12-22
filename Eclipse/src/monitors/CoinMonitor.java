@@ -40,7 +40,9 @@ public class CoinMonitor extends Thread implements Runnable {
 		System.out.println("Monitor started");
 		
 		while (running) {
-			for (String c : wallet.getCurrencies().keySet()) {
+			wallet.semaphoreAcq();
+			String curr[] = wallet.getCurrencies().keySet().toArray(new String[wallet.getCurrencies().keySet().size()]);
+			for (String c : curr) {
 				coin = wallet.getCurrencies().get(c);
 				try {
 					monitoredCoin = c;
@@ -60,10 +62,11 @@ public class CoinMonitor extends Thread implements Runnable {
 
 
 				try {
-					Thread.sleep(200);
+					Thread.sleep(150);
 				} catch (InterruptedException e) {
 				}
 			}
+			wallet.semaphoreRel();
 			
 			try {
 				Thread.sleep(1000);

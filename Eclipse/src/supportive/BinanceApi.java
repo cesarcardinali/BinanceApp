@@ -29,6 +29,7 @@ public class BinanceApi {
 	final String API_URL = "https://api.binance.com/";
 
 	final String ORDER_URL = "api/v3/order";
+	final String ALL_OPEN_ORDERS = "/api/v3/openOrders";
 	final String TICKER_24H = "api/v1/ticker/24hr";
 	final String SERVER_TIME = "api/v1/time";
 	final String ACCOUNT = "api/v3/account";
@@ -70,6 +71,8 @@ public class BinanceApi {
 			}
 			br.close();
 
+			allOpenOrders("IOTABTC");
+
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -86,7 +89,7 @@ public class BinanceApi {
 			String parameters = "timestamp=" + System.currentTimeMillis();
 			// Generate signature
 			String signature = generateSignature(parameters);
-						
+
 			URL url = new URL(API_URL + ACCOUNT + "?" + parameters + "&signature=" + signature);
 			URLConnection uc;
 			uc = getConnection(url);
@@ -114,9 +117,13 @@ public class BinanceApi {
 	}
 
 
-	public boolean placeOrder(String side, String coinSymbol, float quantity, float price) {
+	public boolean placeOrder(String side, String coinSymbol, String type, float quantity, float price, float stopPrice, String orderId) {
 		String url = API_URL;
-		String urlParameters = "symbol=" + coinSymbol + "&side=" + side + "&type=LIMIT&timeInForce=GTC&quantity=" + quantity + "&price=" + price + "&recvWindow=5000&timestamp=" + System.currentTimeMillis();
+		String urlParameters = "symbol=" + coinSymbol + "&side=" + side + "&type=" + type + "&timeInForce=GTC&quantity=" + quantity + "&price=" + price + "&recvWindow=5000&timestamp=" + System.currentTimeMillis();
+
+		if (!type.equals("LIMIT")) {
+			urlParameters += "&stopPrice=" + stopPrice;
+		}
 
 		try {
 			// Generate signature
@@ -171,17 +178,122 @@ public class BinanceApi {
 	}
 
 
-	public boolean placeBuyOrder(String coinSymbol, float quantity, float price) {
-		return placeOrder("BUY", coinSymbol, quantity, price);
+	public boolean placeBuyOrder(String coinSymbol, float quantity, float price, String orderId) {
+		return placeOrder("BUY", coinSymbol, "LIMIT", quantity, price, 0, orderId);
 	}
+	
+	
+	/*
+	[
+	{
+	"symbol": "IOTABTC",
+	"orderId": 9847911,
+	"clientOrderId": "D1rq702QFuJqDYd0KQXApo",
+	"price": "0.00021000",
+	"origQty": "25.00000000",
+	"executedQty": "0.00000000",
+	"status": "NEW",
+	"timeInForce": "GTC",
+	"type": "TAKE_PROFIT_LIMIT",
+	"side": "BUY",
+	"stopPrice": "0.00020000",
+	"icebergQty": "0.00000000",
+	"time": 1513961394749,
+	"isWorking": false
+	}
+	]
+	 */
+	public boolean placeStartLimitOrder(String coinSymbol, float quantity, float price, float stopPrice, String orderId) {
+		return placeOrder("BUY", coinSymbol, "TAKE_PROFIT_LIMIT", quantity, price, stopPrice, orderId);
+	}
+	
 
-
-	public boolean placeSellOrder(String coinSymbol, float quantity, float price) {
-		return placeOrder("SELL", coinSymbol, quantity, price);
+	public boolean placeSellOrder(String coinSymbol, float quantity, float price, String orderId) {
+		return placeOrder("SELL", coinSymbol, "LIMIT", quantity, price, 0, orderId);
+	}
+	
+	
+	/*
+	{
+	    "symbol": "BTCUSDT",
+	    "orderId": 11977952,
+	    "clientOrderId": "VxpF48RBsOqz8TbPuzTDaF",
+	    "price": "16268.99000000",
+	    "origQty": "0.00263400",
+	    "executedQty": "0.00000000",
+	    "status": "NEW",
+	    "timeInForce": "GTC",
+	    "type": "STOP_LOSS_LIMIT",
+	    "side": "SELL",
+	    "stopPrice": "8268.99000000",
+	    "icebergQty": "0.00000000",
+	    "time": 1513960659570,
+	    "isWorking": false
+	 }
+	 */
+	public boolean placeStopLimitOrder(String coinSymbol, float quantity, float price, float stopPrice, String orderId) {
+		return placeOrder("SELL", coinSymbol, "STOP_LOSS_LIMIT", quantity, price, stopPrice, orderId);
 	}
 
 
 	public boolean removeOrder(String orderId) {
+		return false;
+	}
+
+
+	public boolean allOpenOrders(String coinSymbol) {
+		String url = API_URL;
+		String urlParameters = "symbol=" + coinSymbol + "&timestamp=" + System.currentTimeMillis();
+
+		try {
+			// Generate signature
+			String signature = generateSignature(urlParameters);
+
+			// Create URL Connection
+			URL urlObj = new URL(url + ALL_OPEN_ORDERS + "?" + urlParameters + "&signature=" + signature);
+			System.out.println("URL: " + urlObj);
+			HttpsURLConnection uc = getConnection(urlObj);
+
+			try {
+				int responseCode = uc.getResponseCode();
+				System.out.println("Response Code : " + responseCode);
+
+				BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+				String inputLine;
+				StringBuffer response = new StringBuffer();
+
+				while ((inputLine = in.readLine()) != null) {
+					response.append(inputLine);
+				}
+				in.close();
+				System.out.println("Response:\n" + response.toString());
+				return true;
+
+			} catch (Exception e) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(uc.getErrorStream()));
+				String inputLine;
+				StringBuffer response = new StringBuffer();
+
+				while ((inputLine = in.readLine()) != null) {
+					response.append(inputLine);
+				}
+				in.close();
+
+				System.out.println("Response:\n" + response.toString());
+
+			}
+		} catch (NoSuchAlgorithmException e1) {
+			e1.printStackTrace();
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		} catch (InvalidKeyException e1) {
+			e1.printStackTrace();
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
 		return false;
 	}
 

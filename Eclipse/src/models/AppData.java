@@ -3,9 +3,10 @@ package models;
 import java.util.ArrayList;
 import monitors.CoinMonitor;
 import supportive.AccountStorage;
-import supportive.BinanceApi;
 import supportive.AccountStorage.SavedAccount;
+import supportive.BinanceApi;
 import ui.MainWindow;
+import actuators.ComboTrade;
 import actuators.TrailingOrder;
 
 
@@ -19,6 +20,7 @@ public class AppData {
 	public long totalMoneyCurrent = 0;
 	
 	ArrayList<TrailingOrder> activeTrailings;
+	ArrayList<ComboTrade> activeComboTrades;
 	ArrayList<CoinMonitor> coinMonitors;
 
 
@@ -27,6 +29,7 @@ public class AppData {
 		wallet = new Wallet();
 		
 		activeTrailings = new ArrayList<>();
+		activeComboTrades = new ArrayList<>();
 		coinMonitors = new ArrayList<>();
 		accs = new AccountStorage();
 	}
@@ -81,6 +84,10 @@ public class AppData {
 		activeTrailings.add(t);
 	}
 	
+	public void addComboTrade(ComboTrade t) {
+		activeComboTrades.add(t);
+	}
+	
 	public void addMonitor(CoinMonitor m) {
 		coinMonitors.add(m);
 	}
@@ -90,7 +97,13 @@ public class AppData {
 			t.cancel();
 			activeTrailings.remove(t);
 		}
-		
+	}
+	
+	public void stopAllComboTrades() {
+		for (ComboTrade m : activeComboTrades) {
+			m.cancel();
+			activeComboTrades.remove(m);
+		}
 	}
 	
 	public void stopAllMonitors() {
@@ -98,7 +111,6 @@ public class AppData {
 			m.stopMonitor();
 			coinMonitors.remove(m);
 		}
-		
 	}
 	
 	public boolean hasMonitor(String symbol) {
