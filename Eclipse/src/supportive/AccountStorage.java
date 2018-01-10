@@ -49,7 +49,7 @@ public class AccountStorage {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(accountsFile));
 			
 			for (SavedAccount ac : accs) {
-				bw.write(ac.getAccount() + "\t" + ac.getKey() + "\t" + ac.getSecret());
+				bw.write(ac.getAccount() + "\t" + ac.getKey() + "\t" + ac.getSecret() + "\n");
 			}
 			bw.close();
 			

@@ -108,6 +108,7 @@ public class TrailingOrder implements Runnable {
 						System.out.println("Alert for possible selling at " + df.format(actualPrice));
 					} else {
 						System.out.println("Selling for " + df.format(actualPrice));
+						//binance.placeSellOrder(symbol, quantity, trailPrice, "vendendoiota");
 						done = true;
 					}
 				} else {

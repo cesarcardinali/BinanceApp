@@ -486,7 +486,8 @@ public class OrdersScreen extends JPanel {
 				String sellLimit = txtComboSellLimit.getText();
 				
 				// TODO remove it (teste)
-				ComboTrade combo = new ComboTrade(appData, coin, quantity, buy, buyLimit, sell, sellLimit);
+				//ComboTrade(AppData appData, String symbol, String quantity, String buy, String sell, String buyLimit, String sellLimit)
+				ComboTrade combo = new ComboTrade(appData, coin, quantity, buy, sell, buyLimit, sellLimit);
 				Thread comboThread = new Thread(combo);
 				comboThread.start();
 

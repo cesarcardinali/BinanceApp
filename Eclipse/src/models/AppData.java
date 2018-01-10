@@ -64,8 +64,8 @@ public class AppData {
 			
 			// Start monitors
 			CoinMonitor cm = new CoinMonitor(this, "");
-			cm.start();
 			coinMonitors.add(cm);
+			cm.start();
 			
 			ui.goToMainScreen();
 			ui.revalidate();

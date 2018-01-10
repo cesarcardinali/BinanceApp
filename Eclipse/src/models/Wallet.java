@@ -48,17 +48,17 @@ public class Wallet {
 					System.out.println(tmp.getName() + ": " + (tmp.getQuantityFree() + tmp.getQuantityLocked()));
 				}
 			}
-		}		
+				
 		/*
         currencies.put("BNBBTC", new Coin());
 		currencies.put("ETHBTC", new Coin());
 		currencies.put("BCCBTC", new Coin());
 		currencies.put("LTCBTC", new Coin());
         */
-		s.release();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		s.release();
 	}
 	
 	

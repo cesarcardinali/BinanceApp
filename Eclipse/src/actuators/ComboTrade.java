@@ -88,18 +88,20 @@ public class ComboTrade implements Runnable {
 			System.out.println("Buy limit: " + df.format(buyLimit));
 			System.out.println("Sell price: " + df.format(sellPrice));
 			System.out.println("Sell limit: " + df.format(sellLimit));
-			
+
 			if (bought == false) {
 				System.out.println("Waiting price to buy");
 				if (actualPrice <= buyPrice) {
 					System.out.println("Buying for " + df.format(buyLimit));
+					binance.placeStartLimitOrder(symbol, quantity, buyPrice, buyLimit, "bcdorder1");
 					bought = true;
 				}
 			}
-			
+
 			else {
 				if (actualPrice >= sellPrice) {
 					System.out.println("Selling for " + df.format(sellLimit));
+					binance.placeStopLimitOrder(symbol, (float) (quantity*0.999), sellPrice, sellLimit, "bcdorder2");
 					sold = true;
 					done = true;
 				} else {
@@ -107,7 +109,7 @@ public class ComboTrade implements Runnable {
 				}
 			}
 
-			
+
 			System.out.println("\n");
 
 			try {
