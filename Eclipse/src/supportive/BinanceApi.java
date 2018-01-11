@@ -397,6 +397,66 @@ public class BinanceApi {
 		return uc;
 	}
 
+	
+	// Test methods
+	public String testSignAndPostUrl(String URL) {
+		try {
+			String urlWithTimestamp = URL + "&timestamp=" + System.currentTimeMillis();
+			
+			// Generate signature
+			String signature = generateSignature(urlWithTimestamp);
+
+			// Create URL Connection
+			URL urlObj = new URL(urlWithTimestamp + "&signature=" + signature);
+			System.out.println("URL: " + urlObj);
+			HttpsURLConnection uc = postConnection(urlObj);
+
+			try {
+				int responseCode = uc.getResponseCode();
+				System.out.println("Response Code : " + responseCode);
+
+				BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+				String inputLine;
+				StringBuffer response = new StringBuffer();
+
+				while ((inputLine = in.readLine()) != null) {
+					response.append(inputLine);
+				}
+				in.close();
+				System.out.println("Response:\n" + response.toString());
+				
+				return response.toString();
+
+			} catch (Exception e) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(uc.getErrorStream()));
+				String inputLine;
+				StringBuffer response = new StringBuffer();
+
+				while ((inputLine = in.readLine()) != null) {
+					response.append(inputLine);
+				}
+				in.close();
+
+				System.out.println("Response:\n" + response.toString());
+				
+				return response.toString();
+			}
+		} catch (NoSuchAlgorithmException e1) {
+			e1.printStackTrace();
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		} catch (InvalidKeyException e1) {
+			e1.printStackTrace();
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		return "error";
+	}
+	
+	
 	// Getters and Setters -------------------------------------------------------------
 
 }

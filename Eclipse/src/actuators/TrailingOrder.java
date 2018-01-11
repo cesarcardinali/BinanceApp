@@ -1,6 +1,8 @@
 package actuators;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import models.AppData;
 import models.Coin;
 import models.Wallet;
@@ -93,6 +95,7 @@ public class TrailingOrder implements Runnable {
 	public void run() {
 		Coin coin = null;
 		DecimalFormat df = new DecimalFormat("#.#########");
+		df.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
 		startTime = System.currentTimeMillis();
 
 		if (wallet.getCurrencies() != null && !wallet.getCurrencies().containsKey(symbol)) {
@@ -126,7 +129,7 @@ public class TrailingOrder implements Runnable {
 			System.out.println("My price  : " + df.format(trailPrice));
 			System.out.println("Coin price: " + df.format(actualPrice));
 			System.out.println("Drop Limit: " + df.format(trailPrice - dropLimit));
-			System.out.println("Goal: " + df.format(goalPrice));
+			System.out.println("Goal      : " + df.format(goalPrice));
 			if(stopPrice > 0)
 				System.out.println("Stop Activated: " + df.format(stopPrice));
 			System.out.println("Trades: " + coin.getLastMinuteTrades());
@@ -140,20 +143,25 @@ public class TrailingOrder implements Runnable {
 				
 				if (goalPrice > 0 && goalPrice < actualPrice) {
 					if (actualPrice > goalPrice) {
-						binance.placeSellOrder(symbol, quantity, df.format(trailPrice), "vendendo" + symbol);
+						System.out.println("Selling for " + df.format(actualPrice) + "(" + df.format(actualPrice/startPrice) + ")");
+						binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
 					}
 				}
 				
 			} else {
 				if (actualPrice < trailPrice - dropLimit || actualPrice < stopPrice) {
-					if (alert == false) {
-						alert = true;
-						System.out.println("Alert for possible selling at " + df.format(actualPrice));
+					if (actualPrice > startPrice) {
+						if (alert == false) {
+							alert = true;
+							System.out.println("Alert for possible selling at " + df.format(actualPrice));
+						} else {
+							System.out.println("Selling for " + df.format(actualPrice) + "(" + df.format(actualPrice/startPrice) + ")");
+							//(String coinSymbol, float quantity, float price, String orderId) 
+							binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
+							done = true;
+						}
 					} else {
-						System.out.println("Selling for " + df.format(actualPrice));
-						//(String coinSymbol, float quantity, float price, String orderId) 
-						binance.placeSellOrder(symbol, quantity, df.format(trailPrice), "vendendo" + symbol);
-						done = true;
+						System.out.println("HOOODL! Coin price is below your bought price ");
 					}
 				} else {
 					System.out.println("Still better than limit\nPrice: " + df.format(actualPrice) + "   -  Limit: " + df.format(trailPrice - dropLimit));

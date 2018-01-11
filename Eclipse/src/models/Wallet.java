@@ -42,18 +42,11 @@ public class Wallet {
 			for(int i = 0; i < coins.size(); i++) {
 				JSONObject coinData = (JSONObject) coins.get(i);
 				Coin tmp = new Coin(coinData);
-				if (tmp.getQuantityFree() + tmp.getQuantityLocked() > 0 && !tmp.getName().contains("BCX") && !tmp.getName().contains("SBTC") && !tmp.getName().contains("USDT")) {
+				if (tmp.getQuantityFree() + tmp.getQuantityLocked() > 0.01 && !tmp.getName().contains("BCX") && !tmp.getName().contains("SBTC") && !tmp.getName().contains("USDT")) {
 					currencies.put(tmp.getName(), tmp);
 					System.out.println(tmp.getName() + ": " + (tmp.getQuantityFree() + tmp.getQuantityLocked()));
 				}
 			}
-				
-		/*
-        currencies.put("BNBBTC", new Coin());
-		currencies.put("ETHBTC", new Coin());
-		currencies.put("BCCBTC", new Coin());
-		currencies.put("LTCBTC", new Coin());
-        */
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

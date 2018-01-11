@@ -1,6 +1,8 @@
 package actuators;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import models.AppData;
 import models.Coin;
 import models.Wallet;
@@ -64,6 +66,7 @@ public class ComboTrade implements Runnable {
 	public void run() {
 		Coin coin = null;
 		DecimalFormat df = new DecimalFormat("#.########");
+		df.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
 		startTime = System.currentTimeMillis();
 
 		if (wallet.getCurrencies() != null && !wallet.getCurrencies().containsKey(symbol)) {
