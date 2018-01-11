@@ -12,16 +12,16 @@ public class ComboTrade implements Runnable {
 	AppData appData;
 	Wallet wallet;
 	BinanceApi binance;
-
-	boolean done = false;
+	
 	String symbol;
 	float buyPrice;
 	float buyLimit;
 	float sellPrice;
-	float sellLimit;
+	float dropLimit;
 	float quantity;
 	boolean bought = false;
 	boolean sold = false;
+	TrailingOrder trail;
 
 	float actualPrice;
 	float lastPrice;
@@ -29,7 +29,7 @@ public class ComboTrade implements Runnable {
 	long startTime;
 
 
-	public ComboTrade(AppData appData, String symbol, String quantity, String buy, String sell, String buyLimit, String sellLimit) {
+	public ComboTrade(AppData appData, String symbol, String quantity, String buy, String sell, String buyLimit, String dropLimit) {
 		this.appData = appData;
 		wallet = appData.getWallet();
 		binance = appData.getBinance();
@@ -39,11 +39,11 @@ public class ComboTrade implements Runnable {
 		this.buyPrice = Float.parseFloat(buy);
 		this.sellPrice = Float.parseFloat(sell);
 
-		if (sellLimit.contains("%")) {
-			sellLimit = sellLimit.replace("%", "");
-			this.sellLimit = sellPrice + (sellPrice * Float.parseFloat(sellLimit) / 100);
+		if (dropLimit.contains("%")) {
+			dropLimit = dropLimit.replace("%", "");
+			this.dropLimit = sellPrice + (sellPrice * Float.parseFloat(dropLimit) / 100);
 		} else {
-			this.sellLimit = Float.parseFloat(sellLimit);
+			this.dropLimit = Float.parseFloat(dropLimit);
 		}
 
 		if (buyLimit.contains("%")) {
@@ -52,6 +52,11 @@ public class ComboTrade implements Runnable {
 		} else {
 			this.buyLimit = Float.parseFloat(buyLimit);
 		}
+		
+		
+		// Config trailing seller
+		// public TrailingOrder(AppData appData, String symbol, String start, String dropLimit, String quantity) {
+		trail = new TrailingOrder(appData, symbol, sell, dropLimit, quantity);
 	}
 
 
@@ -67,7 +72,7 @@ public class ComboTrade implements Runnable {
 			wallet.semaphoreRel();
 		}
 
-		while (done != true) {
+		while (bought != true) {
 			coin = wallet.getCurrencies().get(symbol);
 			lastPrice = coin.getLastClosePrice();
 			actualPrice = coin.getActualClosePrice();
@@ -80,25 +85,30 @@ public class ComboTrade implements Runnable {
 				}
 				continue;
 			}
-
+			
 			System.out.println(symbol);
 			System.out.println("Coin price: " + df.format(actualPrice));
 			System.out.println("Coin Trades: " + coin.getLastMinuteTrades());
 			System.out.println("Buy price: " + df.format(buyPrice));
 			System.out.println("Buy limit: " + df.format(buyLimit));
 			System.out.println("Sell price: " + df.format(sellPrice));
-			System.out.println("Sell limit: " + df.format(sellLimit));
+			System.out.println("Sell limit: " + df.format(dropLimit));
 
 			if (bought == false) {
 				System.out.println("Waiting price to buy");
 				if (actualPrice <= buyPrice) {
 					System.out.println("Buying for " + df.format(buyLimit));
-					binance.placeStartLimitOrder(symbol, quantity, buyPrice, buyLimit, "bcdorder1");
+					binance.placeStartLimitOrder(symbol, quantity, df.format(buyPrice), df.format(buyLimit), "bcdorder1");
 					bought = true;
 				}
 			}
 
 			else {
+				Thread trailing = new Thread(trail);
+				trailing.start();
+				appData.addTrailing(trail);
+				
+				/*
 				if (actualPrice >= sellPrice) {
 					System.out.println("Selling for " + df.format(sellLimit));
 					binance.placeStopLimitOrder(symbol, (float) (quantity*0.999), sellPrice, sellLimit, "bcdorder2");
@@ -106,7 +116,7 @@ public class ComboTrade implements Runnable {
 					done = true;
 				} else {
 					System.out.println("Waiting for a good price to sell");
-				}
+				}*/
 			}
 
 
@@ -123,6 +133,6 @@ public class ComboTrade implements Runnable {
 
 
 	public void cancel() {
-		done = true;
+		bought = true;
 	}
 }

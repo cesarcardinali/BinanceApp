@@ -17,6 +17,7 @@ public class TrailingOrder implements Runnable {
 	String symbol;
 	float startPrice;
 	float stopPrice;
+	float goalPrice;
 	float trailPrice;
 	float dropLimit;
 	float quantity;
@@ -24,10 +25,38 @@ public class TrailingOrder implements Runnable {
 	float actualPrice;
 	float lastPrice;
 	boolean percentage = false;
+	boolean percentageGoal = true;
 	boolean alert = false;
 	long startTime;
 
 
+	public TrailingOrder(AppData appData, String symbol, String start, String dropLimit, String goal, String quantity) {
+		this.appData = appData;
+		wallet = appData.getWallet();
+		binance = appData.getBinance();
+
+		this.symbol = symbol;
+		
+		start = start.replace(",", ".");
+		dropLimit = dropLimit.replace(",", ".");
+		goal = goal.replace(",", ".");
+		
+		if (goal.contains("%")) {
+			percentageGoal = true;
+			goal = goal.replace("%", "");
+		} else {
+			percentageGoal = false;
+		}
+		goal.replace("%", "");
+		
+		this.trailPrice = Float.parseFloat(start);
+		startPrice = trailPrice;
+		stopPrice = 0;
+		goalPrice = Float.parseFloat(goal);;
+		this.dropLimit = Float.parseFloat(dropLimit);
+		this.quantity = Float.parseFloat(quantity);
+	}
+	
 	public TrailingOrder(AppData appData, String symbol, String start, String dropLimit, String quantity) {
 		this.appData = appData;
 		wallet = appData.getWallet();
@@ -45,6 +74,7 @@ public class TrailingOrder implements Runnable {
 		this.trailPrice = Float.parseFloat(start);
 		startPrice = trailPrice;
 		stopPrice = 0;
+		goalPrice = -1;
 		this.dropLimit = Float.parseFloat(dropLimit);
 		this.quantity = Float.parseFloat(quantity);
 	}
@@ -57,12 +87,12 @@ public class TrailingOrder implements Runnable {
 		this.dropLimit = -1;
 		this.quantity = -1;
 	}
-
-
+	
+	
 	@Override
 	public void run() {
 		Coin coin = null;
-		DecimalFormat df = new DecimalFormat("#.########");
+		DecimalFormat df = new DecimalFormat("#.#########");
 		startTime = System.currentTimeMillis();
 
 		if (wallet.getCurrencies() != null && !wallet.getCurrencies().containsKey(symbol)) {
@@ -88,11 +118,17 @@ public class TrailingOrder implements Runnable {
 			if (percentage) {
 				dropLimit = trailPrice * dropLimit / 100;
 			}
-
+			if (percentageGoal) {
+				goalPrice = startPrice + startPrice * dropLimit / 100;
+			}
+			
 			System.out.println(symbol);
-			System.out.println("My price: " + df.format(trailPrice));
+			System.out.println("My price  : " + df.format(trailPrice));
 			System.out.println("Coin price: " + df.format(actualPrice));
-			System.out.println("Limit: " + df.format(trailPrice - dropLimit));
+			System.out.println("Drop Limit: " + df.format(trailPrice - dropLimit));
+			System.out.println("Goal: " + df.format(goalPrice));
+			if(stopPrice > 0)
+				System.out.println("Stop Activated: " + df.format(stopPrice));
 			System.out.println("Trades: " + coin.getLastMinuteTrades());
 
 			if (actualPrice > trailPrice) {
@@ -100,7 +136,14 @@ public class TrailingOrder implements Runnable {
 				if (percentage) {
 					dropLimit = trailPrice * dropLimit / 100;
 				}
-				System.out.println("Updating price to " + trailPrice);
+				System.out.println("Updating price to " + df.format(trailPrice));
+				
+				if (goalPrice > 0 && goalPrice < actualPrice) {
+					if (actualPrice > goalPrice) {
+						binance.placeSellOrder(symbol, quantity, df.format(trailPrice), "vendendo" + symbol);
+					}
+				}
+				
 			} else {
 				if (actualPrice < trailPrice - dropLimit || actualPrice < stopPrice) {
 					if (alert == false) {
@@ -108,7 +151,8 @@ public class TrailingOrder implements Runnable {
 						System.out.println("Alert for possible selling at " + df.format(actualPrice));
 					} else {
 						System.out.println("Selling for " + df.format(actualPrice));
-						//binance.placeSellOrder(symbol, quantity, trailPrice, "vendendoiota");
+						//(String coinSymbol, float quantity, float price, String orderId) 
+						binance.placeSellOrder(symbol, quantity, df.format(trailPrice), "vendendo" + symbol);
 						done = true;
 					}
 				} else {
@@ -121,7 +165,7 @@ public class TrailingOrder implements Runnable {
 			}
 
 
-			if (System.currentTimeMillis() - startTime > 2.5 * 60 * 1000) {
+			if (System.currentTimeMillis() - startTime > 5 * 60 * 1000) {
 				if (dropLimit < startPrice && stopPrice == 0) {
 					stopPrice = (float) (startPrice * 1.0021);
 					System.out.println("Stop price activated");

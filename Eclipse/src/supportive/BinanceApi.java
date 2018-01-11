@@ -117,7 +117,7 @@ public class BinanceApi {
 	}
 
 
-	public boolean placeOrder(String side, String coinSymbol, String type, float quantity, float price, float stopPrice, String orderId) {
+	public boolean placeOrder(String side, String coinSymbol, String type, float quantity, String price, String stopPrice, String orderId) {
 		String url = API_URL;
 		String urlParameters = "symbol=" + coinSymbol + "&side=" + side + "&type=" + type + "&timeInForce=GTC&quantity=" + quantity + "&price=" + price + "&recvWindow=5000&timestamp=" + System.currentTimeMillis();
 
@@ -178,8 +178,8 @@ public class BinanceApi {
 	}
 
 
-	public boolean placeBuyOrder(String coinSymbol, float quantity, float price, String orderId) {
-		return placeOrder("BUY", coinSymbol, "LIMIT", quantity, price, 0, orderId);
+	public boolean placeBuyOrder(String coinSymbol, float quantity, String price, String orderId) {
+		return placeOrder("BUY", coinSymbol, "LIMIT", quantity, price, "0", orderId);
 	}
 	
 	
@@ -203,13 +203,13 @@ public class BinanceApi {
 	}
 	]
 	 */
-	public boolean placeStartLimitOrder(String coinSymbol, float quantity, float price, float stopPrice, String orderId) {
+	public boolean placeStartLimitOrder(String coinSymbol, float quantity, String price, String stopPrice, String orderId) {
 		return placeOrder("BUY", coinSymbol, "TAKE_PROFIT_LIMIT", quantity, price, stopPrice, orderId);
 	}
 	
 
-	public boolean placeSellOrder(String coinSymbol, float quantity, float price, String orderId) {
-		return placeOrder("SELL", coinSymbol, "LIMIT", quantity, price, 0, orderId);
+	public boolean placeSellOrder(String coinSymbol, float quantity, String price, String orderId) {
+		return placeOrder("SELL", coinSymbol, "LIMIT", quantity, price, "0", orderId);
 	}
 	
 	
@@ -231,7 +231,7 @@ public class BinanceApi {
 	    "isWorking": false
 	 }
 	 */
-	public boolean placeStopLimitOrder(String coinSymbol, float quantity, float price, float stopPrice, String orderId) {
+	public boolean placeStopLimitOrder(String coinSymbol, float quantity, String price, String stopPrice, String orderId) {
 		return placeOrder("SELL", coinSymbol, "STOP_LOSS_LIMIT", quantity, price, stopPrice, orderId);
 	}
 

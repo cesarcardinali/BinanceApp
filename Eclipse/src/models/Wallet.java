@@ -1,6 +1,5 @@
 package models;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 import org.json.simple.JSONArray;
@@ -43,7 +42,7 @@ public class Wallet {
 			for(int i = 0; i < coins.size(); i++) {
 				JSONObject coinData = (JSONObject) coins.get(i);
 				Coin tmp = new Coin(coinData);
-				if (tmp.getQuantityFree() + tmp.getQuantityLocked() > 0 && !tmp.getName().contains("BCX") && !tmp.getName().contains("SBTC")) {
+				if (tmp.getQuantityFree() + tmp.getQuantityLocked() > 0 && !tmp.getName().contains("BCX") && !tmp.getName().contains("SBTC") && !tmp.getName().contains("USDT")) {
 					currencies.put(tmp.getName(), tmp);
 					System.out.println(tmp.getName() + ": " + (tmp.getQuantityFree() + tmp.getQuantityLocked()));
 				}
