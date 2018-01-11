@@ -337,6 +337,7 @@ public class BinanceApi {
 
 	// Supportive Methods --------------------------------------------------------------
 	private String generateSignature(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException {
+		System.out.println("Signing " + text);
 		Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
 		SecretKeySpec secret_key = new SecretKeySpec(API_SECRET.getBytes("UTF-8"), "HmacSHA256");
 		sha256_HMAC.init(secret_key);
@@ -407,7 +408,7 @@ public class BinanceApi {
 			String signature = generateSignature(urlWithTimestamp);
 
 			// Create URL Connection
-			URL urlObj = new URL(urlWithTimestamp + "&signature=" + signature);
+			URL urlObj = new URL("https://api.binance.com/api/v3/order?" + urlWithTimestamp + "&signature=" + signature);
 			System.out.println("URL: " + urlObj);
 			HttpsURLConnection uc = postConnection(urlObj);
 

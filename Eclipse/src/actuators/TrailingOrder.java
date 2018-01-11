@@ -145,6 +145,7 @@ public class TrailingOrder implements Runnable {
 					if (actualPrice > goalPrice) {
 						System.out.println("Selling for " + df.format(actualPrice) + "(" + df.format(actualPrice/startPrice) + ")");
 						binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
+						done = true;
 					}
 				}
 				
