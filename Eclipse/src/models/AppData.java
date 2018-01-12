@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 import monitors.CoinMonitor;
 import supportive.AccountStorage;
 import supportive.AccountStorage.SavedAccount;
@@ -22,9 +23,12 @@ public class AppData {
 	ArrayList<TrailingOrder> activeTrailings;
 	ArrayList<ComboTrade> activeComboTrades;
 	ArrayList<CoinMonitor> coinMonitors;
+	
+	private Semaphore s;
 
 
 	public AppData(MainWindow mainWindow) {
+		s = new Semaphore(1);
 		this.ui = mainWindow;
 		wallet = new Wallet();
 		
@@ -93,23 +97,45 @@ public class AppData {
 	}
 	
 	public void stopAllTrailings() {
-		for (TrailingOrder t : activeTrailings) {
-			t.cancel();
-			activeTrailings.remove(t);
+		try {
+			s.acquire();
+			for (TrailingOrder t : activeTrailings) {
+				t.cancelIt();
+				activeTrailings.remove(t);
+			}
+			s.release();
+		} catch (InterruptedException e) { 
+			e.printStackTrace();
 		}
 	}
 	
 	public void stopAllComboTrades() {
-		for (ComboTrade m : activeComboTrades) {
-			m.cancel();
-			activeComboTrades.remove(m);
+		try {
+			s.acquire();
+			
+			for (ComboTrade m : activeComboTrades) {
+				m.cancel();
+				activeComboTrades.remove(m);
+			}
+			
+			s.release();
+		} catch (InterruptedException e) { 
+			e.printStackTrace();
 		}
 	}
 	
 	public void stopAllMonitors() {
-		for (CoinMonitor m : coinMonitors) {
-			m.stopMonitor();
-			coinMonitors.remove(m);
+		try {
+			s.acquire();
+			
+			for (CoinMonitor m : coinMonitors) {
+				m.stopMonitor();
+				coinMonitors.remove(m);
+			}
+				
+			s.release();
+		} catch (InterruptedException e) { 
+			e.printStackTrace();
 		}
 	}
 	
