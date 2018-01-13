@@ -23,8 +23,10 @@ public class TrailingOrder implements Runnable {
 	float startPrice;
 	float minimumPrice;
 	float goalPrice;
+	float goalPricePercentage = -1;
 	float trailPrice;
 	float dropLimit;
+	float dropLimitPercentage = -1;
 	float quantity;
 
 	float actualPrice;
@@ -33,9 +35,11 @@ public class TrailingOrder implements Runnable {
 	boolean percentageGoal = true;
 	boolean alert = false;
 	boolean holdForBought = false;
+	boolean loopIt = false;
+	boolean SOAGD = false;
 	String holdForGoal = "";
 	long startTime;
-	
+
 	public static final String GOAL_HARD = "hard";
 	public static final String GOAL_SOFT = "soft";
 	public static final String GOAL_NONE = "none";
@@ -56,16 +60,26 @@ public class TrailingOrder implements Runnable {
 		if (goal.contains("%")) {
 			percentageGoal = true;
 			goal = goal.replace("%", "");
+			goalPricePercentage = Float.parseFloat(goal) / 100;
+			goalPrice = -1;
 		} else {
 			percentageGoal = false;
+			goalPrice = Float.parseFloat(goal);
 		}
-		goal.replace("%", "");
 
-		trailPrice = Float.parseFloat(start);
+		if (dropLimit.contains("%")) {
+			percentage = true;
+			dropLimit = dropLimit.replace("%", "");
+			dropLimitPercentage = Float.parseFloat(dropLimit) / 100;
+			this.dropLimit = -1;
+		} else {
+			percentage = false;
+			this.dropLimit = Float.parseFloat(dropLimit);
+		}
+
 		startPrice = Float.parseFloat(start);
-		minimumPrice = 0;
-		goalPrice = Float.parseFloat(goal);
-		this.dropLimit = Float.parseFloat(dropLimit);
+		trailPrice = Float.parseFloat(start);
+		minimumPrice = 99999; // to be calculate later
 		this.quantity = Float.parseFloat(quantity);
 	}
 
@@ -106,6 +120,7 @@ public class TrailingOrder implements Runnable {
 
 	@Override
 	public void run() {
+		// Config basic stuff
 		statusPane = new TrailingPane();
 		statusPane.setStatus("Waiting for status ...");
 		String status = "";
@@ -122,31 +137,35 @@ public class TrailingOrder implements Runnable {
 			wallet.semaphoreRel();
 		}
 		boolean goalAchieved = false;
-		int lastTradesCount = -1;
 		showPanel();
 
+		// Start trailing
 		while (done != true) {
+			// Get coin data
 			coin = wallet.getCurrencies().get(symbol);
 			lastPrice = coin.getLastClosePrice();
 			actualPrice = coin.getActualClosePrice();
 			status = "";
 
+			// Check if coin data is ready
 			if (lastPrice == -1 || actualPrice == -1) {
-				System.out.println("Prices unkown");
+				System.out.println("Waiting for coin data ...");
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(2000);
 				} catch (InterruptedException e) {
 				}
 				continue;
 			}
 
+			// Calculate variables values
 			if (percentage) {
-				dropLimit = trailPrice * dropLimit / 100;
+				dropLimit = trailPrice * dropLimitPercentage;
 			}
-			if (percentageGoal) {
-				goalPrice = startPrice + startPrice * dropLimit / 100;
+			if (percentageGoal && goalPrice == -1) {
+				goalPrice = startPrice + startPrice * goalPricePercentage;
 			}
 
+			// Show the coin information
 			System.out.println(symbol);
 			status += symbol + "\n\n";
 			System.out.println("My price  : " + df.format(startPrice));
@@ -159,98 +178,160 @@ public class TrailingOrder implements Runnable {
 			status += "Drop Limit: " + df.format(trailPrice - dropLimit) + " (" + dfPct.format(((trailPrice - dropLimit) / startPrice - 1) * 100) + "%)" + "\n";
 			System.out.println("Goal      : " + df.format(goalPrice) + "  -  " + goalAchieved);
 			status += "Goal      : " + df.format(goalPrice) + "  -  " + goalAchieved + "\n";
+
+			// Check if stop loss is activated
 			if (minimumPrice > 0) {
-				System.out.println("Stop min Activated: " + df.format(minimumPrice));
-				status += "Stop min Activated: " + df.format(minimumPrice) + "\n";
+				System.out.println("Stop loss Activated: " + df.format(minimumPrice));
+				status += "Stop loss Activated: " + df.format(minimumPrice) + "\n";
 			}
 			System.out.println("Trades: " + coin.getLastMinuteTrades());
 			status += "Trades: " + coin.getLastMinuteTrades() + "\n";
 
-			
-			if (coin.getLastMinuteTrades() == lastTradesCount) {
-				System.out.println("Coin still the same, waiting for a change ...");
-				status += "Coin still the same, waiting for a change ..." + "\n";
+
+			// Check if price is higher now
+			if (actualPrice > trailPrice) {
+				// Update the top price
+				trailPrice = actualPrice;
+				System.out.println("Updating price to " + df.format(trailPrice));
+				status += "Updating price to " + df.format(trailPrice) + "\n";
+
+				// Check if Goal is reached
+				if (goalPrice > 0 && actualPrice >= goalPrice) {
+					goalPrice = actualPrice;
+					goalAchieved = true;
+					System.out.println("Goal achieved! Updating Goal price to " + df.format(goalPrice));
+					status += "Goal achieved! Updating Goal price to " + df.format(goalPrice) + "\n";
+				}
 			}
 
-			
-			else {
-				if (actualPrice > trailPrice) {
-					trailPrice = actualPrice;
-					if (percentage) {
-						dropLimit = trailPrice * dropLimit / 100;
-					}
-					System.out.println("Updating price to " + df.format(trailPrice));
-					status += "Updating price to " + df.format(trailPrice) + "\n";
+			// Goal was reached before and user wants to sell as soon as it drops before highest value?
+			else if (goalAchieved && SOAGD) {
+				System.out.println("Selling out! Dropped from the top and higher than first goal (SOAGD) - (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)");
+				status += "Selling based on goal for " + df.format(actualPrice) + " (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)" + "\n";
+				//binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
+				done = true;
+			}
 
-					if (goalPrice > 0 && goalPrice < actualPrice) {
-						if (actualPrice > goalPrice) {
-							goalPrice = actualPrice;
-							goalAchieved = true;
-							System.out.println("Goal achieved! Updating price and selling after drop!");
-							status += "Goal achieved! Updating price and selling after drop!" + "\n";
-						} else if (goalAchieved) {
-							System.out.println("Selling based on goal for " + df.format(actualPrice) + " (" + dfPct.format((actualPrice / startPrice  - 1) * 100) + "%)");
-							status += "Selling based on goal for " + df.format(actualPrice) + " (" + dfPct.format((actualPrice / startPrice  - 1) * 100) + "%)" + "\n";
+			// Price dropped below drop limit?
+			else if (actualPrice < trailPrice - dropLimit) {
+				// Se nao atingiu o GOAL e o modo eh HARD, nao vende
+				if (holdForGoal.equals(GOAL_HARD)) {
+					if (goalAchieved) {
+						System.out.println("Selling! Goal HARD achieved!! (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)");
+						status += "Selling! Goal HARD achieved!! (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)" + "\n";
+						//binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
+						done = true;
+					}
+					
+					else {
+						System.out.println("Waiting for Goal (HARD) price ignoring any other value below it");
+						status += "Waiting for Goal (HARD) price ignoring any other value below it" + "\n";
+					}
+				} 
+				
+				// Se nao for HARD e ja caiu do limite, vende! (pois se for soft ou preco minimo e entrou aqui, quer dizer q ja eh menor q o minimo)
+				else {
+					System.out.println("Selling out to avoid loss! (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)");
+					status += "Selling out to avoid loss! (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)" + "\n";
+					//binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
+					done = true;
+				}
+			} 
+			
+			// Se nao bateu o limite de drop mas bateu o minimo, vende!
+			else if ((holdForGoal.equals(GOAL_SOFT) || holdForBought) && actualPrice <= minimumPrice) {
+				System.out.println("Selling out to avoid loss! Dropped from minimum price (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)");
+				status += "Selling out to avoid loss! Dropped from minimum price (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)" + "\n";
+				//binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
+				done = true;
+			}
+
+
+			/*
+			
+			if (actualPrice > trailPrice) {
+				// Update the top price
+				trailPrice = actualPrice;
+			
+				// If needed, recalculate the drop limit
+				if (percentage) {
+					dropLimit = trailPrice * dropLimit / 100;
+				}
+				System.out.println("Updating price to " + df.format(trailPrice));
+				status += "Updating price to " + df.format(trailPrice) + "\n";
+			
+				// Check if Goal is reached
+				if (goalPrice > 0 && actualPrice >= goalPrice) {
+					goalPrice = actualPrice;
+					goalAchieved = true;
+					System.out.println("Goal achieved! Updating Goal price to " + df.format(goalPrice));
+					status += "Goal achieved! Updating Goal price to " + df.format(goalPrice) + "\n";
+			
+					// If it is beyond the Goal and the top trail price had a drop, sell it!
+				} else if (goalAchieved && SOAGD) {
+					System.out.println("Selling out! Dropped from the top and higher than first goal (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)");
+					status += "Selling based on goal for " + df.format(actualPrice) + " (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)" + "\n";
+					//binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
+					done = true;
+				}
+			
+			} else {
+				if (actualPrice < trailPrice - dropLimit || (minimumPrice > 0 && actualPrice < minimumPrice)) {
+					if (actualPrice > startPrice && actualPrice > minimumPrice) {
+						if (alert == false) {
+							alert = true;
+							System.out.println("Alert for possible selling at " + df.format(actualPrice));
+							status += "Alert for possible selling at " + df.format(actualPrice) + "\n";
+						} else {
+							System.out.println("Selling for " + df.format(actualPrice) + " (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)");
+							status += "Selling for " + df.format(actualPrice) + " (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)" + "\n";
 							//binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
 							done = true;
 						}
-					}
-
-				} else {
-					if (actualPrice < trailPrice - dropLimit || (minimumPrice > 0 && actualPrice < minimumPrice)) {
-						if (actualPrice > startPrice && actualPrice > minimumPrice) {
-							if (alert == false) {
-								alert = true;
-								System.out.println("Alert for possible selling at " + df.format(actualPrice));
-								status += "Alert for possible selling at " + df.format(actualPrice) + "\n";
-							} else {
-								System.out.println("Selling for " + df.format(actualPrice) + " (" + dfPct.format((actualPrice / startPrice  - 1) * 100) + "%)");
-								status += "Selling for " + df.format(actualPrice) + " (" + dfPct.format((actualPrice / startPrice  - 1) * 100) + "%)" + "\n";
-								//binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
-								done = true;
-							}
-						} else {
-							System.out.println("HOOODL! Coin price is below your bought price ");
-							status += "HOOODL! Coin price is below your bought price " + "\n";
-						}
-						
 					} else {
-						System.out.println("Still better than limit\nPrice: " + df.format(actualPrice) + "   -  Limit: " + df.format(trailPrice - dropLimit));
-						status += "Still better than limit\nPrice: " + df.format(actualPrice) + "   -  Limit: " + df.format(trailPrice - dropLimit) + "\n";
-						alert = false;
+						System.out.println("HOOODL! Coin price is below your bought price ");
+						status += "HOOODL! Coin price is below your bought price " + "\n";
 					}
+			
+				} else {
+					System.out.println("Still better than limit\nPrice: " + df.format(actualPrice) + "   -  Limit: " + df.format(trailPrice - dropLimit));
+					status += "Still better than limit\nPrice: " + df.format(actualPrice) + "   -  Limit: " + df.format(trailPrice - dropLimit) + "\n";
+					alert = false;
 				}
+			}*/
 
 
-				if (System.currentTimeMillis() - startTime > 5 * 60 * 1000) {
-					if (dropLimit < startPrice && minimumPrice == 0) {
-						minimumPrice = (float) (startPrice * 1.003);
-						System.out.println("Stop price activated " + df.format(minimumPrice));
-						status += "Stop price activated " + df.format(minimumPrice) + "\n";
-					}
-					
-					if (goalAchieved) {
-						minimumPrice = goalPrice;
-					}
+			// Activate stop loss
+			if (System.currentTimeMillis() - startTime > 5 * 60 * 1000) {
+				if (dropLimit < startPrice && minimumPrice == 0) {
+					minimumPrice = (float) (startPrice * 1.003);
+					System.out.println("Stop price activated " + df.format(minimumPrice));
+					status += "Stop price activated " + df.format(minimumPrice) + "\n";
 				}
 			}
 
 
+			// Print data
 			statusPane.setStatus(status);
 			System.out.println("\n");
 
 
+			// Wait for next cycle
 			try {
 				Thread.sleep(20000);
 			} catch (InterruptedException e) {
 			}
 		}
 
+		// Tell user that it is finished!
 		System.out.println(symbol + " trailing stopped");
+		statusPane.setStatus(symbol + " trailing stopped");
+		statusPane.setVisible(true);
+		statusPane.requestFocus();
 		appData.getActiveTrailings().remove(this);
 	}
 
-	
+
 	public void cancelIt() {
 		done = true;
 	}
@@ -265,16 +346,32 @@ public class TrailingOrder implements Runnable {
 	public boolean isHoldForBought() {
 		return holdForBought;
 	}
-	
+
 	public void setHoldForBought(boolean holdForBought) {
 		this.holdForBought = holdForBought;
 	}
 
-	public String isHoldForGoal() {
+	public String getHoldForGoal() {
 		return holdForGoal;
 	}
-	
+
 	public void setHoldForGoal(String holdForGoal) {
 		this.holdForGoal = holdForGoal;
+	}
+
+	public boolean isSOAGD() {
+		return SOAGD;
+	}
+
+	public void setSOAGD(boolean sOAGD) {
+		SOAGD = sOAGD;
+	}
+
+	public boolean isLoopIt() {
+		return loopIt;
+	}
+
+	public void setLoopIt(boolean loopIt) {
+		this.loopIt = loopIt;
 	}
 }

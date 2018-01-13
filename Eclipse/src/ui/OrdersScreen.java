@@ -52,6 +52,9 @@ public class OrdersScreen extends JPanel {
 	private JCheckBox cbHoldForGoalPriceHard;
 	private JCheckBox cbHoldForBoughtPrice;
 	private JCheckBox cbHoldForGoalPriceSoft;
+	private JCheckBox cbLoopIt;
+	private JPanel panel;
+	private JCheckBox cbSOAGD;
 
 
 	public OrdersScreen(AppData appData) {
@@ -122,7 +125,7 @@ public class OrdersScreen extends JPanel {
 		gbc_scrollPane.gridy = 3;
 		add(scrollPane, gbc_scrollPane);
 
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		scrollPane.setViewportView(panel);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -158,7 +161,7 @@ public class OrdersScreen extends JPanel {
 		panel.add(lblBoughtAt, gbc_lblBoughtAt);
 
 		JLabel lblDropLimit = new JLabel("Drop Pace Limit");
-		lblDropLimit.setToolTipText("Maximum value to drop from last value");
+		lblDropLimit.setToolTipText("<html>Maximum coin value drop from last price</html>");
 		GridBagConstraints gbc_lblDropLimit = new GridBagConstraints();
 		gbc_lblDropLimit.insets = new Insets(0, 0, 5, 5);
 		gbc_lblDropLimit.gridx = 1;
@@ -172,8 +175,8 @@ public class OrdersScreen extends JPanel {
 		gbc_label_4.gridy = 1;
 		panel.add(label_4, gbc_label_4);
 		
-		JLabel label_16 = new JLabel("S A G D");
-		label_16.setToolTipText("<html>After value is higher than Goal, sell it as soon as it get its first value drop<br>If your goal was $75, your drop limit is $5, the actual value is $90 and it drops to $89. Sell it</html>");
+		JLabel label_16 = new JLabel("SOAGD");
+		label_16.setToolTipText("<html>Sell on After Goal Drop<br><br>After value is higher than Goal, sell it as soon as it get its first value drop<br>If your goal was $75, your drop limit is $5, the actual value is $90 and it drops to $89. Sell it</html>");
 		GridBagConstraints gbc_label_16 = new GridBagConstraints();
 		gbc_label_16.insets = new Insets(0, 0, 5, 5);
 		gbc_label_16.gridx = 4;
@@ -207,7 +210,7 @@ public class OrdersScreen extends JPanel {
 		txtTrailingBoughtValue.setColumns(10);
 
 		txtTrailingDropLimit = new JTextField();
-		txtTrailingDropLimit.setToolTipText("Maximum value to drop from last value");
+		txtTrailingDropLimit.setToolTipText("<html>Maximum coin value drop from last price</html>");
 		GridBagConstraints gbc_txtTrailingDropLimit = new GridBagConstraints();
 		gbc_txtTrailingDropLimit.insets = new Insets(0, 0, 5, 5);
 		gbc_txtTrailingDropLimit.gridx = 1;
@@ -267,13 +270,13 @@ public class OrdersScreen extends JPanel {
 		bg1.add(cbHoldForGoalPriceHard);
 		bg1.add(cbHoldForGoalPriceSoft);
 		
-		JCheckBox checkBox_1 = new JCheckBox("");
-		checkBox_1.setToolTipText("<html>After value is higher than Goal, sell it as soon as it get its first value drop<br>If your goal was $75, your drop limit is $5, the actual value is $90 and it drops to $89. Sell it</html>");
-		GridBagConstraints gbc_checkBox_1 = new GridBagConstraints();
-		gbc_checkBox_1.insets = new Insets(0, 0, 5, 5);
-		gbc_checkBox_1.gridx = 4;
-		gbc_checkBox_1.gridy = 2;
-		panel.add(checkBox_1, gbc_checkBox_1);
+		cbSOAGD = new JCheckBox("");
+		cbSOAGD.setToolTipText("<html>After value is higher than Goal, sell it as soon as it get its first value drop<br>If your goal was $75, your drop limit is $5, the actual value is $90 and it drops to $89. Sell it</html>");
+		GridBagConstraints gbc_cbSOAGD = new GridBagConstraints();
+		gbc_cbSOAGD.insets = new Insets(0, 0, 5, 5);
+		gbc_cbSOAGD.gridx = 4;
+		gbc_cbSOAGD.gridy = 2;
+		panel.add(cbSOAGD, gbc_cbSOAGD);
 		
 		cbHoldForBoughtPrice = new JCheckBox("");
 		cbHoldForBoughtPrice.setToolTipText("<html>Select this option if you want to sell if your coin value <br>reaches the bought price plus taxes (1.002*bought at)</html>");
@@ -283,13 +286,13 @@ public class OrdersScreen extends JPanel {
 		gbc_cbHoldForBoughtPrice.gridy = 2;
 		panel.add(cbHoldForBoughtPrice, gbc_cbHoldForBoughtPrice);
 		
-		JCheckBox checkBox = new JCheckBox("");
-		checkBox.setToolTipText("<html>If trail is finished but the coin value reaches the same Bought At value,<br> rebuy it and rerun using same values.</html>");
-		GridBagConstraints gbc_checkBox = new GridBagConstraints();
-		gbc_checkBox.insets = new Insets(0, 0, 5, 5);
-		gbc_checkBox.gridx = 6;
-		gbc_checkBox.gridy = 2;
-		panel.add(checkBox, gbc_checkBox);
+		cbLoopIt = new JCheckBox("");
+		cbLoopIt.setToolTipText("<html>If trail is finished but the coin value reaches the same Bought At value,<br> rebuy it and rerun using same values.</html>");
+		GridBagConstraints gbc_cbLoopIt = new GridBagConstraints();
+		gbc_cbLoopIt.insets = new Insets(0, 0, 5, 5);
+		gbc_cbLoopIt.gridx = 6;
+		gbc_cbLoopIt.gridy = 2;
+		panel.add(cbLoopIt, gbc_cbLoopIt);
 
 		btnAddTrailingStop = new JButton("Add");
 		GridBagConstraints gbc_btnAddTrailingStop = new GridBagConstraints();
@@ -603,7 +606,6 @@ public class OrdersScreen extends JPanel {
 				TrailingOrder trail = new TrailingOrder(appData, coin, start, drop, goal, quantity);
 				Thread trailing = new Thread(trail);
 				
-				trail.setHoldForBought(cbHoldForBoughtPrice.isSelected());
 				if (cbHoldForGoalPriceSoft.isSelected()) {
 					trail.setHoldForGoal(TrailingOrder.GOAL_SOFT);
 				} else if (cbHoldForGoalPriceHard.isSelected()) {
@@ -611,6 +613,9 @@ public class OrdersScreen extends JPanel {
 				} else {
 					trail.setHoldForGoal(TrailingOrder.GOAL_NONE);
 				}
+				trail.setHoldForBought(cbHoldForBoughtPrice.isSelected());
+				trail.setLoopIt(cbLoopIt.isSelected());
+				trail.setSOAGD(cbSOAGD.isSelected());
 				
 				trailing.start();
 
