@@ -208,7 +208,7 @@ public class TrailingOrder implements Runnable {
 			else if (goalAchieved && SOAGD) {
 				System.out.println("Selling out! Dropped from the top and higher than first goal (SOAGD) - (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)");
 				status += "Selling based on goal for " + df.format(actualPrice) + " (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)" + "\n";
-				//binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
+				binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
 				done = true;
 			}
 			
@@ -227,7 +227,7 @@ public class TrailingOrder implements Runnable {
 					if (goalAchieved) {
 						System.out.println("Selling! Goal HARD achieved!! (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)");
 						status += "Selling! Goal HARD achieved!! (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)" + "\n";
-						//binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
+						binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
 						done = true;
 					}
 					
@@ -241,7 +241,7 @@ public class TrailingOrder implements Runnable {
 				else {
 					System.out.println("Selling out to avoid loss! (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)");
 					status += "Selling out to avoid loss! (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)" + "\n";
-					//binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
+					binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
 					done = true;
 				}
 			} 
@@ -250,7 +250,7 @@ public class TrailingOrder implements Runnable {
 			else if ((holdForGoal.equals(GOAL_SOFT) || holdForBought) && actualPrice <= minimumPrice && minimumPrice != 99999) {
 				System.out.println("Selling out to avoid loss! Dropped from minimum price (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)");
 				status += "Selling out to avoid loss! Dropped from minimum price (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)" + "\n";
-				//binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
+				binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
 				done = true;
 			}
 
