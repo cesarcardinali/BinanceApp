@@ -333,7 +333,7 @@ public class TrailingOrder implements Runnable {
 
 		// Tell user that it is finished!
 		System.out.println(symbol + " trailing stopped");
-		statusPane.setStatus(symbol + " trailing stopped");
+		statusPane.setStatus(status + "\n\n --- Trailing stopped ---");
 		statusPane.setVisible(true);
 		statusPane.requestFocus();
 		appData.getActiveTrailings().remove(this);
