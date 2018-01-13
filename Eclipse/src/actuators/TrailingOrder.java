@@ -180,7 +180,7 @@ public class TrailingOrder implements Runnable {
 			status += "Goal      : " + df.format(goalPrice) + "  -  " + goalAchieved + "\n";
 
 			// Check if stop loss is activated
-			if (minimumPrice > 0) {
+			if (minimumPrice > 0 && minimumPrice != 99999) {
 				System.out.println("Stop loss Activated: " + df.format(minimumPrice));
 				status += "Stop loss Activated: " + df.format(minimumPrice) + "\n";
 			}
@@ -211,8 +211,16 @@ public class TrailingOrder implements Runnable {
 				//binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
 				done = true;
 			}
-
-			// Price dropped below drop limit?
+			
+			// Get known that price dropped!
+			else if (alert == false) {
+				alert = true;
+				
+				System.out.println("Price is dropped!! Alert is now ON!  If it stiill low, coin will be sold");
+				status += "Price is dropped!! Alert is now ON!  If it stiill low, coin will be sold" + "\n";
+			}
+			
+			// If it is alerted 
 			else if (actualPrice < trailPrice - dropLimit) {
 				// Se nao atingiu o GOAL e o modo eh HARD, nao vende
 				if (holdForGoal.equals(GOAL_HARD)) {
@@ -239,7 +247,7 @@ public class TrailingOrder implements Runnable {
 			} 
 			
 			// Se nao bateu o limite de drop mas bateu o minimo, vende!
-			else if ((holdForGoal.equals(GOAL_SOFT) || holdForBought) && actualPrice <= minimumPrice) {
+			else if ((holdForGoal.equals(GOAL_SOFT) || holdForBought) && actualPrice <= minimumPrice && minimumPrice != 99999) {
 				System.out.println("Selling out to avoid loss! Dropped from minimum price (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)");
 				status += "Selling out to avoid loss! Dropped from minimum price (" + dfPct.format((actualPrice / startPrice - 1) * 100) + "%)" + "\n";
 				//binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
@@ -318,7 +326,7 @@ public class TrailingOrder implements Runnable {
 
 			// Wait for next cycle
 			try {
-				Thread.sleep(20000);
+				Thread.sleep(13000);
 			} catch (InterruptedException e) {
 			}
 		}
