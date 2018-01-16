@@ -2,13 +2,13 @@ package models;
 
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
+import actuators.ComboTrade;
+import actuators.TrailingOrder;
 import monitors.CoinMonitor;
 import supportive.AccountStorage;
 import supportive.AccountStorage.SavedAccount;
 import supportive.BinanceApi;
 import ui.MainWindow;
-import actuators.ComboTrade;
-import actuators.TrailingOrder;
 
 
 public class AppData {
@@ -99,11 +99,13 @@ public class AppData {
 	public void stopAllTrailings() {
 		try {
 			s.acquire();
+			System.out.println("acquired semaphore");
 			for (TrailingOrder t : activeTrailings) {
 				t.cancelIt();
 				activeTrailings.remove(t);
 			}
 			s.release();
+			System.out.println("release semaphore");
 		} catch (InterruptedException e) { 
 			e.printStackTrace();
 		}

@@ -47,7 +47,6 @@ public class OrdersScreen extends JPanel {
 	private JButton btnStopGui;
 	private JButton btnGuiTest;
 	private JTextField txtDropLimit;
-	private JTextField txtGoal;
 	private JButton btnShow;
 	private JCheckBox cbHoldForGoalPriceHard;
 	private JCheckBox cbHoldForBoughtPrice;
@@ -55,6 +54,7 @@ public class OrdersScreen extends JPanel {
 	private JCheckBox cbLoopIt;
 	private JPanel panel;
 	private JCheckBox cbSOAGD;
+	private JButton btnStopCombo;
 
 
 	public OrdersScreen(AppData appData) {
@@ -128,9 +128,9 @@ public class OrdersScreen extends JPanel {
 		panel = new JPanel();
 		scrollPane.setViewportView(panel);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gbl_panel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gbl_panel.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gbl_panel.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panel.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
@@ -297,14 +297,14 @@ public class OrdersScreen extends JPanel {
 		btnAddTrailingStop = new JButton("Add");
 		GridBagConstraints gbc_btnAddTrailingStop = new GridBagConstraints();
 		gbc_btnAddTrailingStop.insets = new Insets(0, 0, 5, 5);
-		gbc_btnAddTrailingStop.gridx = 8;
+		gbc_btnAddTrailingStop.gridx = 7;
 		gbc_btnAddTrailingStop.gridy = 2;
 		panel.add(btnAddTrailingStop, gbc_btnAddTrailingStop);
 
 		btnStop = new JButton("Stop");
 		GridBagConstraints gbc_btnStop = new GridBagConstraints();
 		gbc_btnStop.insets = new Insets(0, 0, 5, 0);
-		gbc_btnStop.gridx = 9;
+		gbc_btnStop.gridx = 8;
 		gbc_btnStop.gridy = 2;
 		panel.add(btnStop, gbc_btnStop);
 
@@ -332,7 +332,7 @@ public class OrdersScreen extends JPanel {
 		gbc_label_2.gridy = 5;
 		panel.add(label_2, gbc_label_2);
 
-		JLabel label_3 = new JLabel("Sell Price");
+		JLabel label_3 = new JLabel("Sell Price / Goal");
 		GridBagConstraints gbc_label_3 = new GridBagConstraints();
 		gbc_label_3.insets = new Insets(0, 0, 5, 5);
 		gbc_label_3.gridx = 2;
@@ -345,13 +345,6 @@ public class OrdersScreen extends JPanel {
 		gbc_label_13.gridx = 3;
 		gbc_label_13.gridy = 5;
 		panel.add(label_13, gbc_label_13);
-
-		JLabel label_14 = new JLabel("Goal");
-		GridBagConstraints gbc_label_14 = new GridBagConstraints();
-		gbc_label_14.insets = new Insets(0, 0, 5, 5);
-		gbc_label_14.gridx = 5;
-		gbc_label_14.gridy = 5;
-		panel.add(label_14, gbc_label_14);
 
 		txtComboBuyPrice = new JTextField();
 		GridBagConstraints gbc_txtComboBuyPrice = new GridBagConstraints();
@@ -386,29 +379,19 @@ public class OrdersScreen extends JPanel {
 		gbc_txtDropLimit.gridy = 6;
 		panel.add(txtDropLimit, gbc_txtDropLimit);
 
-		txtGoal = new JTextField();
-		txtGoal.setText("0.0000015");
-		txtGoal.setColumns(10);
-		GridBagConstraints gbc_txtGoal = new GridBagConstraints();
-		gbc_txtGoal.insets = new Insets(0, 0, 5, 5);
-		gbc_txtGoal.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txtGoal.gridx = 5;
-		gbc_txtGoal.gridy = 6;
-		panel.add(txtGoal, gbc_txtGoal);
-
 		btnAddStopCombo = new JButton("Add");
 		GridBagConstraints gbc_btnAddStopCombo = new GridBagConstraints();
 		gbc_btnAddStopCombo.insets = new Insets(0, 0, 5, 5);
-		gbc_btnAddStopCombo.gridx = 8;
+		gbc_btnAddStopCombo.gridx = 7;
 		gbc_btnAddStopCombo.gridy = 6;
 		panel.add(btnAddStopCombo, gbc_btnAddStopCombo);
 
-		JButton btnStopStopCombo = new JButton("Stop");
-		GridBagConstraints gbc_btnStopStopCombo = new GridBagConstraints();
-		gbc_btnStopStopCombo.insets = new Insets(0, 0, 5, 0);
-		gbc_btnStopStopCombo.gridx = 9;
-		gbc_btnStopStopCombo.gridy = 6;
-		panel.add(btnStopStopCombo, gbc_btnStopStopCombo);
+		btnStopCombo = new JButton("Stop");
+		GridBagConstraints gbc_btnStopCombo = new GridBagConstraints();
+		gbc_btnStopCombo.insets = new Insets(0, 0, 5, 0);
+		gbc_btnStopCombo.gridx = 8;
+		gbc_btnStopCombo.gridy = 6;
+		panel.add(btnStopCombo, gbc_btnStopCombo);
 
 		button = new JButton("Open Post Test");
 		GridBagConstraints gbc_button = new GridBagConstraints();
@@ -422,13 +405,13 @@ public class OrdersScreen extends JPanel {
 		btnGuiTest = new JButton("Gui");
 		GridBagConstraints gbc_btnGuiTest = new GridBagConstraints();
 		gbc_btnGuiTest.insets = new Insets(0, 0, 0, 5);
-		gbc_btnGuiTest.gridx = 8;
+		gbc_btnGuiTest.gridx = 7;
 		gbc_btnGuiTest.gridy = 7;
 		panel.add(btnGuiTest, gbc_btnGuiTest);
 
 		btnStopGui = new JButton("Stop");
 		GridBagConstraints gbc_btnStopGui = new GridBagConstraints();
-		gbc_btnStopGui.gridx = 9;
+		gbc_btnStopGui.gridx = 8;
 		gbc_btnStopGui.gridy = 7;
 		panel.add(btnStopGui, gbc_btnStopGui);
 
@@ -635,7 +618,6 @@ public class OrdersScreen extends JPanel {
 		
 
 		btnAddStopCombo.addActionListener(new ActionListener() {
-
 			public void actionPerformed(ActionEvent e) {
 				String coin = txtCoinName.getText();
 				String quantity = txtCoinAmount.getText();
@@ -647,10 +629,18 @@ public class OrdersScreen extends JPanel {
 				// TODO remove it (teste)
 				//ComboTrade(AppData appData, String symbol, String quantity, String buy, String sell, String buyLimit, String sellLimit)
 				ComboTrade combo = new ComboTrade(appData, coin, quantity, buy, sell, buyLimit, sellLimit);
+				if (cbHoldForGoalPriceSoft.isSelected()) {
+					combo.setGoalMode(TrailingOrder.GOAL_SOFT);
+				} else if (cbHoldForGoalPriceHard.isSelected()) {
+					combo.setGoalMode(TrailingOrder.GOAL_HARD);
+				} else {
+					combo.setGoalMode(TrailingOrder.GOAL_NONE);
+				}
 				Thread comboThread = new Thread(combo);
 				comboThread.start();
 
 				appData.addComboTrade(combo);
+				combo.trail.setHoldForGoal(TrailingOrder.GOAL_SOFT);
 				// END --------
 			}
 		});
@@ -659,6 +649,14 @@ public class OrdersScreen extends JPanel {
 		btnStop.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
+				appData.stopAllTrailings();
+			}
+		});
+		
+		btnStopCombo.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+				appData.stopAllComboTrades();
 				appData.stopAllTrailings();
 			}
 		});

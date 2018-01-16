@@ -253,10 +253,17 @@ public class TrailingOrder implements Runnable {
 				binance.placeSellOrder(symbol, quantity, df.format(actualPrice), "vend" + symbol);
 				done = true;
 			}
+			
+			else {
+				System.out.println("Doing nothing");
+				status += "Doing nothing" + "\n";
+			}
 
+			
+			
+			
 
 			/*
-			
 			if (actualPrice > trailPrice) {
 				// Update the top price
 				trailPrice = actualPrice;
@@ -309,8 +316,10 @@ public class TrailingOrder implements Runnable {
 			}*/
 
 
+			
+			
 			// Activate stop loss
-			if (System.currentTimeMillis() - startTime > 5 * 60 * 1000) {
+			if (System.currentTimeMillis() - startTime > 1 * 60 * 1000) {
 				if (dropLimit < startPrice && minimumPrice == 0) {
 					minimumPrice = (float) (startPrice * 1.003);
 					System.out.println("Stop price activated " + df.format(minimumPrice));
@@ -326,7 +335,7 @@ public class TrailingOrder implements Runnable {
 
 			// Wait for next cycle
 			try {
-				Thread.sleep(13000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 			}
 		}
@@ -335,6 +344,7 @@ public class TrailingOrder implements Runnable {
 		System.out.println(symbol + " trailing stopped");
 		statusPane.setStatus(status + "\n\n --- Trailing stopped ---");
 		statusPane.setVisible(true);
+		statusPane.setAlwaysOnTop(true);
 		statusPane.requestFocus();
 		appData.getActiveTrailings().remove(this);
 	}

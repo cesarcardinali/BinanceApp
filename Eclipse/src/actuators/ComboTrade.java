@@ -14,7 +14,7 @@ public class ComboTrade implements Runnable {
 	AppData appData;
 	Wallet wallet;
 	BinanceApi binance;
-	
+
 	String symbol;
 	float buyPrice;
 	float buyLimit;
@@ -23,7 +23,9 @@ public class ComboTrade implements Runnable {
 	float quantity;
 	boolean bought = false;
 	boolean sold = false;
-	TrailingOrder trail;
+
+	public TrailingOrder trail;
+	String goalMode = "";
 
 	float actualPrice;
 	float lastPrice;
@@ -54,17 +56,17 @@ public class ComboTrade implements Runnable {
 		} else {
 			this.buyLimit = Float.parseFloat(buyLimit);
 		}
-		
-		
+
+
 		// Config trailing seller
-		// public TrailingOrder(AppData appData, String symbol, String start, String dropLimit, String quantity) {
-		trail = new TrailingOrder(appData, symbol, sell, dropLimit, quantity);
+		trail = new TrailingOrder(appData, symbol, buy, dropLimit, sell, quantity);
 	}
 
 
 	@Override
 	public void run() {
 		Coin coin = null;
+		boolean buyPriceDetected = false;
 		DecimalFormat df = new DecimalFormat("#.########");
 		df.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
 		startTime = System.currentTimeMillis();
@@ -88,7 +90,7 @@ public class ComboTrade implements Runnable {
 				}
 				continue;
 			}
-			
+
 			System.out.println(symbol);
 			System.out.println("Coin price: " + df.format(actualPrice));
 			System.out.println("Coin Trades: " + coin.getLastMinuteTrades());
@@ -97,45 +99,56 @@ public class ComboTrade implements Runnable {
 			System.out.println("Sell price: " + df.format(sellPrice));
 			System.out.println("Sell limit: " + df.format(dropLimit));
 
-			if (bought == false) {
-				System.out.println("Waiting price to buy");
-				if (actualPrice <= buyPrice) {
+			System.out.println("Waiting price to buy");
+			if (actualPrice <= buyPrice) {
+				if (buyPriceDetected) {
 					System.out.println("Buying for " + df.format(buyLimit));
-					binance.placeStartLimitOrder(symbol, quantity, df.format(buyPrice), df.format(buyLimit), "bcdorder1");
+					binance.placeBuyOrder(symbol, quantity, df.format(buyLimit), "bcdorder1");
 					bought = true;
+				} else {
+					buyPriceDetected = true;
 				}
+			} else {
+				buyPriceDetected = false;
 			}
 
-			else {
-				Thread trailing = new Thread(trail);
-				trailing.start();
-				appData.addTrailing(trail);
-				
-				/*
-				if (actualPrice >= sellPrice) {
-					System.out.println("Selling for " + df.format(sellLimit));
-					binance.placeStopLimitOrder(symbol, (float) (quantity*0.999), sellPrice, sellLimit, "bcdorder2");
-					sold = true;
-					done = true;
-				} else {
-					System.out.println("Waiting for a good price to sell");
-				}*/
-			}
+
+			/*
+			if (actualPrice >= sellPrice) {
+				System.out.println("Selling for " + df.format(sellLimit));
+				binance.placeStopLimitOrder(symbol, (float) (quantity*0.999), sellPrice, sellLimit, "bcdorder2");
+				sold = true;
+				done = true;
+			} else {
+				System.out.println("Waiting for a good price to sell");
+			}*/
 
 
 			System.out.println("\n");
 
 			try {
-				Thread.sleep(20000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 			}
 		}
 
-		System.out.println(symbol + " trailing stopped");
+		Thread trailing = new Thread(trail);
+		trailing.start();
+		appData.addTrailing(trail);
+
+		System.out.println(symbol + " buying part stopped");
 	}
 
 
 	public void cancel() {
 		bought = true;
+	}
+
+	public String getGoalMode() {
+		return goalMode;
+	}
+
+	public void setGoalMode(String goalMode) {
+		this.goalMode = goalMode;
 	}
 }
