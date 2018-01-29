@@ -4,6 +4,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 import models.AppData;
 
 
@@ -13,6 +14,7 @@ public class WalletScreen extends JPanel {
 
 
 	public WalletScreen(AppData appData) {
+		setBorder(new EmptyBorder(5, 10, 3, 10));
 		this.appData = appData;
 
 		GridBagLayout gridBagLayout = new GridBagLayout();

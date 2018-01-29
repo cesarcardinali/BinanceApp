@@ -46,7 +46,7 @@ public class AppData {
 			//wallet = new Wallet();
 			wallet = binance.getWallet();
 			
-			ui.goToMainScreen();
+			ui.goToOrdersScreen();
 			ui.revalidate();
 			
 			System.out.println("loggedin");
@@ -71,7 +71,7 @@ public class AppData {
 			coinMonitors.add(cm);
 			cm.start();
 			
-			ui.goToMainScreen();
+			ui.goToOrdersScreen();
 			ui.revalidate();
 			
 			System.out.println("loggedin");

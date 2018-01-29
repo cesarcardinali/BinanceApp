@@ -24,6 +24,7 @@ import ui.tests.PostTests;
 import actuators.ComboTrade;
 import actuators.SmallTrade;
 import actuators.TrailingOrder;
+import javax.swing.border.EmptyBorder;
 
 
 public class OrdersScreen extends JPanel {
@@ -58,6 +59,7 @@ public class OrdersScreen extends JPanel {
 
 
 	public OrdersScreen(AppData appData) {
+		setBorder(new EmptyBorder(5, 10, 3, 10));
 		this.appData = appData;
 		
 		ToolTipManager.sharedInstance().setDismissDelay(60000);
